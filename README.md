@@ -95,7 +95,3 @@ uvicorn app.main:app --reload
 ```
 
 ---
-
-## 작성자
-
-안건 외 3인
