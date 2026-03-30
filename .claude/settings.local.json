@@ -5,7 +5,8 @@
       "mcp__claude_ai_Figma__get_metadata",
       "Bash(find /c/Users/Administrator/Desktop/VODA -maxdepth 3 -type d -not -path *node_modules* -not -path *.venv*)",
       "Bash(git fetch:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git push:*)"
     ]
   }
 }
