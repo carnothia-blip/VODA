@@ -5,10 +5,10 @@ import {
   faChevronRight,
   faChevronDown,
   faRobot,
-  faFilm,
   faTv,
   faUser,
 } from '@fortawesome/free-solid-svg-icons'
+import MovieCard from '../components/MovieCard'
 
 // 더미 데이터 (TMDB 연동 전)
 const ACTOR = {
@@ -47,35 +47,6 @@ const COLLABORATORS = [
   { name: '공유', role: 'Actor' },
   { name: '배두나', role: 'Actress' },
 ]
-
-// 영화 세로 카드
-const MovieCard = ({ movie }) => (
-  <div className='w-[360px] flex-shrink-0 flex flex-col cursor-pointer group'>
-    <div className='relative w-full h-[540px] rounded-lg overflow-hidden bg-[#25252d]'>
-      <div className='w-full h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300'>
-        <FontAwesomeIcon icon={faFilm} className='text-[#71717a] text-4xl' />
-      </div>
-      {/* 그라데이션 */}
-      <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
-      {/* FREE 배지 */}
-      {movie.free && (
-        <div className='absolute top-4 left-4 bg-[#fafafa] rounded px-3 py-1'>
-          <span className='text-[#0a0a0a] text-xs font-bold'>FREE</span>
-        </div>
-      )}
-      {/* 플레이 버튼 */}
-      <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
-        <div className='w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center'>
-          <FontAwesomeIcon icon={faPlay} className='text-white text-xl ml-1' />
-        </div>
-      </div>
-    </div>
-    <div className='pt-3'>
-      <h4 className='text-[#fafafa] text-base font-bold'>{movie.title}</h4>
-      <p className='text-[#a1a1aa] text-sm mt-1'>{movie.genre} • {movie.year}</p>
-    </div>
-  </div>
-)
 
 // 드라마 에피소드 카드
 const EpisodeCard = ({ ep }) => (
@@ -197,7 +168,14 @@ const PersonProfilePage = () => {
           {/* 스크롤 카드 열 */}
           <div className='flex gap-6 overflow-x-auto pb-4 scrollbar-hide'>
             {MOVIES.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
+              <MovieCard 
+                key={movie.id} 
+                title={movie.title} 
+                genre={movie.genre} 
+                year={movie.year} 
+                badgeText={movie.free ? 'FREE' : 'VODA 추천'}
+                className='w-[360px] flex-shrink-0'
+              />
             ))}
           </div>
         </div>
