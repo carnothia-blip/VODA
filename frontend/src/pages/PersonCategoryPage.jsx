@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser, faClapperboard } from '@fortawesome/free-solid-svg-icons'
 
@@ -19,7 +20,7 @@ const DUMMY_PEOPLE = [
 
 const ActorCard = ({ person }) => {
   return (
-    <div className='w-full flex flex-col cursor-pointer group'>
+    <Link to={`/people/${person.id}`} className='w-full flex flex-col cursor-pointer group'>
       {/* 포트레이트 영역 */}
       <div className='relative w-full aspect-[324/486] rounded-lg overflow-hidden bg-[#25252d]'>
         {/* 이미지 플레이스홀더 */}
@@ -51,7 +52,7 @@ const ActorCard = ({ person }) => {
           ))}
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 

@@ -188,9 +188,9 @@ const PersonProfilePage = () => {
                 <p className='text-[#a1a1aa] text-sm mt-1'>매주 찾아오는 큐레이터의 무료 영화 선물</p>
               </div>
             </div>
-            <button className='flex items-center gap-1 text-[#a78bfa] text-sm hover:text-[#c4b5fd] transition-colors'>
+            <Link to='/people/category' className='flex items-center gap-1 text-[#a78bfa] text-sm hover:text-[#c4b5fd] transition-colors'>
               전체보기 <FontAwesomeIcon icon={faChevronRight} className='text-xs' />
-            </button>
+            </Link>
           </div>
 
           {/* 스크롤 카드 열 */}
@@ -215,9 +215,9 @@ const PersonProfilePage = () => {
                 <p className='text-[#a1a1aa] text-sm mt-1'>매주 찾아오는 큐레이터의 무료 영화 선물</p>
               </div>
             </div>
-            <button className='flex items-center gap-1 text-[#a78bfa] text-sm hover:text-[#c4b5fd] transition-colors'>
+            <Link to='/people/category' className='flex items-center gap-1 text-[#a78bfa] text-sm hover:text-[#c4b5fd] transition-colors'>
               전체보기 <FontAwesomeIcon icon={faChevronRight} className='text-xs' />
-            </button>
+            </Link>
           </div>
 
           <div className='flex gap-6 overflow-x-auto pb-4 scrollbar-hide'>
@@ -303,3 +303,4 @@ const PersonProfilePage = () => {
 }
 
 export default PersonProfilePage
+age

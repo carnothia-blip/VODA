@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import GNB from './components/GNB'
-import Footer from './components/Footer'
 import PersonPage from './pages/PersonPage'
 import PersonCategoryPage from './pages/PersonCategoryPage'
 import PersonProfilePage from './pages/PersonProfilePage'
@@ -16,9 +15,14 @@ const App = () => {
             <Route path='/people' element={<PersonPage />} />
             <Route path='/people/category' element={<PersonCategoryPage />} />
             <Route path='/people/:id' element={<PersonProfilePage />} />
+            {/* Placeholder routes for GNB links */}
+            <Route path='/movie' element={<PersonPage />} />
+            <Route path='/tv' element={<PersonPage />} />
+            <Route path='/ask' element={<PersonPage />} />
+            <Route path='/search' element={<PersonPage />} />
+            <Route path='/profile' element={<PersonPage />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </BrowserRouter>
   )
