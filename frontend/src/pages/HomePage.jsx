@@ -60,6 +60,7 @@ const HomePage = () => {
             {popularMovies.map((movie) => (
               <div key={movie.id} className='min-w-[280px] md:min-w-[340px]'>
                 <MovieCard
+                  id={movie.id}
                   title={movie.title}
                   genre={movie.genre}
                   year={movie.year}
@@ -78,6 +79,7 @@ const HomePage = () => {
             {newMovies.map((movie) => (
               <div key={movie.id} className='min-w-[280px] md:min-w-[340px]'>
                 <MovieCard
+                  id={movie.id}
                   title={movie.title}
                   genre={movie.genre}
                   year={movie.year}
@@ -96,6 +98,7 @@ const HomePage = () => {
             {topRatedMovies.map((movie) => (
               <div key={movie.id} className='min-w-[280px] md:min-w-[340px]'>
                 <MovieCard
+                  id={movie.id}
                   title={movie.title}
                   genre={movie.genre}
                   year={movie.year}
