@@ -1,6 +1,7 @@
 import { EP } from '../api/tmdb'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlay, faInfoCircle, faStar } from '@fortawesome/free-solid-svg-icons'
+import DetailBtn from './DetailBtn'
 
 const Hero = ({ title, backdrop, overview, rating }) => {
   return (
@@ -38,14 +39,16 @@ const Hero = ({ title, backdrop, overview, rating }) => {
 
         {/* 버튼 */}
         <div className='flex items-center gap-4 mt-4'>
-          <button className='bg-primary-500 hover:bg-primary-600 text-white px-8 py-4 rounded-xl font-bold text-xl flex items-center gap-3 transition-all active:scale-95 shadow-lg shadow-primary-500/20'>
-            <FontAwesomeIcon icon={faPlay} />
-            지금 시청하기
-          </button>
-          <button className='bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-xl flex items-center gap-3 transition-all backdrop-blur-md'>
-            <FontAwesomeIcon icon={faInfoCircle} />
-            상세 정보
-          </button>
+          <DetailBtn
+            label='지금 시청하기'
+            icon={<FontAwesomeIcon icon={faPlay} />}
+            variant='primary'
+          />
+          <DetailBtn
+            label='상세 정보'
+            icon={<FontAwesomeIcon icon={faInfoCircle} />}
+            variant='secondary'
+          />
         </div>
 
       </div>
