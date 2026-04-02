@@ -46,7 +46,7 @@ const DirectorCard = ({
         {/* CTA 버튼 */}
         <Link
           to={to}
-          className='bg-white text-black font-serif font-medium text-2xl text-center rounded-full px-12 py-4 leading-9 transition-transform hover:scale-105 active:scale-95'
+          className='bg-primary-400 text-white font-serif font-medium text-2xl text-center rounded-full px-12 py-4 leading-9 transition-transform hover:scale-105 active:scale-95'
         >
           {btnText}
         </Link>

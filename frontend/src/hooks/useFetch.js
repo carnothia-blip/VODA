@@ -10,20 +10,29 @@ export default function useFetch(fn, deps = []) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [err, setErr] = useState(null)
+  const [prevDeps, setPrevDeps] = useState(deps)
+
+  // deps가 변경되었다면 렌더링 도중 로딩 상태로 전환 (React 19 권장 패턴)
+  if (JSON.stringify(deps) !== JSON.stringify(prevDeps)) {
+    setPrevDeps(deps)
+    setLoading(true)
+    setErr(null)
+  }
 
   useEffect(() => {
     if (!fn) return
 
     let alive = true
-    setLoading(true)
-    setErr(null)
-
+    
     // fn이 함수면 호출하고, 아니면 그대로 사용 (Promise 대응)
     const promise = typeof fn === 'function' ? fn() : fn
 
     // Promise가 아닐 경우 처리
     if (!promise || typeof promise.then !== 'function') {
-      setLoading(false)
+      // 비동기적으로 처리하여 cascading render 방지
+      Promise.resolve().then(() => {
+        if (alive) setLoading(false)
+      })
       return
     }
 
@@ -44,7 +53,7 @@ export default function useFetch(fn, deps = []) {
     return () => {
       alive = false
     }
-  }, deps)
+  }, [fn, ...deps])
 
   return { data, loading, err }
 }

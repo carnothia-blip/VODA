@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { EP } from '../api/tmdb'
-import Hero from '../components/Hero'
 import GenreTab from '../components/GenreTab'
 import PersonCard from '../components/PersonCard'
 import SearchBar from '../components/SearchBar'
@@ -15,7 +15,6 @@ const TABS = [
 ]
 
 const PersonPage = () => {
-  const [heroPerson, setHeroPerson] = useState(null)
   const [trending, setTrending] = useState([])
   const [popular, setPopular] = useState([])
   const [activeTab, setActiveTab] = useState('trending')
@@ -26,19 +25,16 @@ const PersonPage = () => {
       EP.personTrending('day'),
       EP.personPopular(),
     ]).then(([trendRes, popRes]) => {
-      const trendData = trendRes.data.results
-      setHeroPerson(trendData[0])
-      setTrending(trendData)
+      setTrending(trendRes.data.results)
       setPopular(popRes.data.results)
       setLoading(false)
-    })
+    }).catch(console.error)
   }, [])
 
   const persons = activeTab === 'trending' ? trending : popular
 
   if (loading) return <div className='p-20 text-center text-zinc-500'>로딩 중...</div>
 
-  // 포커스 카드 아바타 데이터 매핑
   const avatars = trending.slice(0, 3).map(p => ({
     id: p.id,
     photo: p.profile_path,
@@ -46,20 +42,36 @@ const PersonPage = () => {
   }))
 
   return (
-    <div className='bg-neutral-950 min-h-screen pb-32'>
-      {/* Hero 섹션 - 명세서(PersonPageHeroText.md) 기준 구현 */}
-      <Hero
-        type='person'
-        subtitle='ETHEREAL PROFILES'
-        title='사람을 보다'
-        description={'영화와 드라마를 빛낸 배우들과 감독들을 만나보세요.\n그들의 작품 세계와 필모그래피를 탐험해 보세요.'}
-        backdrop={heroPerson?.profile_path}
-      />
+    <div className='bg-zinc-950 min-h-screen pb-32'>
+      {/* STEP 2: Hero 섹션 수정 — Figma 시안 기준 */}
+      <section className='relative min-h-[500px] pt-32 pb-16 overflow-hidden'>
+        {/* 빛번짐 배경 */}
+        <div className='absolute top-0 right-0 w-2/5 h-full pointer-events-none'>
+          <div className='absolute top-1/4 right-0 w-96 h-96 bg-primary-600 opacity-20 rounded-full blur-3xl' />
+          <div className='absolute top-1/3 right-24 w-64 h-64 bg-blue-600 opacity-15 rounded-full blur-3xl' />
+        </div>
 
-      {/* 검색바 */}
-      <div className='px-12 mt-10'>
-        <SearchBar variant='normal' />
-      </div>
+        {/* 텍스트 콘텐츠 — 중앙 정렬로 변경 */}
+        <div className='relative z-10 max-w-screen-2xl mx-auto px-20 flex flex-col items-center text-center'>
+          <p className='text-xs font-semibold tracking-widest text-primary-400 uppercase mb-4'>
+            ETHEREAL PROFILES
+          </p>
+          <h1 className='text-8xl font-bold text-zinc-50 font-serif leading-tight mb-6'>
+            사람을 보다
+          </h1>
+          <p className='text-base text-zinc-400 leading-relaxed mb-10 max-w-4xl mx-auto w-full'>
+            VODA가 주목하는 스크린 뒤의 빛나는 주역들. 시대를 대표하는 배우와 감독들을 만나보세요.
+          </p>
+          
+          {/* 검색바 컴포넌트 — 너비 확장 (max-w-4xl) */}
+          <div className='w-full max-w-4xl'>
+            <SearchBar 
+              variant='normal' 
+              placeholder='궁금한 영화나 TV 프로그램을 물어보세요.' 
+            />
+          </div>
+        </div>
+      </section>
 
       {/* 인물 탭 */}
       <div className='mt-8'>
@@ -73,7 +85,6 @@ const PersonPage = () => {
           subtitle={activeTab === 'trending' ? '지금 가장 주목받는 인물' : '전 세계에서 사랑받는 인물'}
           link='/person/category'
         />
-        {/* 인물 그리드만 중앙 정렬 */}
         <div className='max-w-screen-xl mx-auto'>
           <div className='grid grid-cols-2 md:grid-cols-4 gap-12'>
             {persons.slice(0, 4).map((p) => (
@@ -89,7 +100,7 @@ const PersonPage = () => {
         </div>
       </div>
 
-      {/* Focus 섹션 (Director Insight + Rookie Focus) */}
+      {/* Focus 섹션 */}
       <div className='px-12 mt-20'>
         <SectionTitle
           title='포커스 인물'
@@ -110,7 +121,7 @@ const PersonPage = () => {
               title='신인 발굴'
               desc='VODA가 예측하는 2026년 최고의 루키들을 소개합니다.'
               avatars={avatars}
-              totalCount={24} // UI 시연용 카운터
+              totalCount={24}
               to='/person/category'
             />
           </div>

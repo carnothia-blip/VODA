@@ -9,6 +9,7 @@ const SearchPage = () => {
   const [keyword, setKeyword] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
+  const [prevKeyword, setPrevKeyword] = useState('')
 
   // 추천 무드 데이터
   const mockMoods = [
@@ -34,14 +35,21 @@ const SearchPage = () => {
     }
   ]
 
-  // 실시간 검색 로직 (Debounce 적용 없이 즉시 실행 - 간단한 구현)
-  useEffect(() => {
+  // 렌더링 도중 키워드 변화에 따른 상태 조정 (React 19 권장 패턴)
+  if (keyword !== prevKeyword) {
+    setPrevKeyword(keyword)
     if (!keyword.trim()) {
       setResults([])
-      return
+      setLoading(false)
+    } else {
+      setLoading(true)
     }
+  }
 
-    setLoading(true)
+  // 실시간 검색 로직 (Debounce 적용)
+  useEffect(() => {
+    if (!keyword.trim()) return
+
     const timer = setTimeout(() => {
       EP.search(keyword)
         .then((res) => {

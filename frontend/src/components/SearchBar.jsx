@@ -13,8 +13,8 @@ const SearchBar = ({ variant = 'normal', onSubmit }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='max-w-3xl mx-auto'>
-      <div className='backdrop-blur-md bg-white/5 border border-white/10 rounded-full px-6 py-3 flex items-center gap-3'>
+    <form onSubmit={handleSubmit} className='w-full mx-auto'>
+      <div className='backdrop-blur-md bg-white/5 border border-[#6C5BA0]/60 rounded-full px-8 py-5 flex items-center gap-4 transition-all focus-within:border-primary-400/80 shadow-lg shadow-primary-900/10'>
         <FontAwesomeIcon
           icon={variant === 'ai' ? faStar : faMagnifyingGlass}
           className='text-white/70'

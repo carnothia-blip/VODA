@@ -19,7 +19,6 @@ const Hero = ({
   title, 
   description, 
   backdrop, 
-  poster, 
   rating 
 }) => {
   
@@ -38,7 +37,7 @@ const Hero = ({
               {subtitle}
             </p>
           )}
-          <h1 className='text-6xl md:text-7xl font-bold text-white mb-8 tracking-tight leading-tight'>
+          <h1 className='text-6xl md:text-7xl font-bold text-white mb-8 tracking-tight leading-tight font-serif'>
             {title}
           </h1>
           {description && (
