@@ -56,6 +56,7 @@
   /* 카드 너비 */
   --width-card-sm: 22.5rem;
   --width-card-md: 25.625rem;
+  --spacing-110: 27.5rem;
 }
 
 @utility scrollbar-hide {
