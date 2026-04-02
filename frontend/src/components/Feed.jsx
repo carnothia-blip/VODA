@@ -3,45 +3,50 @@ import SectionTitle from './SectionTitle'
 import MovieCard from './MovieCard'
 import RankCard from './RankCard'
 import HCard from './HCard'
+import { EP } from '../api/tmdb'
 
 /**
  * Feed 컴포넌트: 섹션 타이틀과 카드 리스트를 포함하는 공통 섹션
  * @param {string} type - 'normal' | 'rank' | 'play'
  * @param {string} title - 섹션 제목
- * @param {string} sub - 부제목 (옵션)
+ * @param {string} subtitle - 부제목 (subtitle로 명칭 통일)
  * @param {Array} items - 표시할 아이템 배열
  * @param {string} mediaType - 'movie' | 'tv'
- * @param {string} link - 전체보기 클릭 시 이동할 경로
+ * @param {string} link - 이동할 경로 (기본값 #)
  */
-const Feed = ({ type = 'normal', title, sub, items = [], mediaType = 'movie', link }) => {
+const Feed = ({ type = 'normal', title, subtitle, items = [], mediaType = 'movie', link = '#' }) => {
   if (!items || items.length === 0) return null
 
   return (
     <section className='w-full'>
-      {/* 섹션 헤더 */}
+      {/* [수정] SectionTitle 규격에 맞게 props 전달 */}
       <SectionTitle 
         title={title} 
-        sub={sub} 
-        showMore={!!link} 
-        onMoreClick={() => link && (window.location.href = link)} 
+        subtitle={subtitle} 
+        link={link} 
       />
 
       {/* 카드 리스트 (가로 스크롤) */}
       <div className={twMerge(
         'flex gap-6 overflow-x-auto pb-8 no-scrollbar pt-4',
-        type === 'rank' && 'gap-10' // 랭킹 카드는 간격을 조금 더 넓게
+        type === 'rank' && 'gap-10' 
       )}>
         {items.map((item, idx) => {
+          // 공통 변수 추출
+          const commonProps = {
+            id: item.id,
+            type: mediaType,
+            title: item.title || item.name,
+          }
+
           if (type === 'rank') {
             return (
               <RankCard
-                key={item.id}
+                key={`rank-${item.id}`}
+                {...commonProps}
                 rank={idx + 1}
-                id={item.id}
-                type={mediaType}
-                title={item.title || item.name}
-                poster={item.poster_path}
-                genre={item.genre_ids?.[0] ? (mediaType === 'movie' ? '영화' : 'TV') : ''}
+                poster={EP.img(item.poster_path)}
+                genre={item.genre_ids?.[0] ? '영화' : ''}
               />
             )
           }
@@ -49,25 +54,23 @@ const Feed = ({ type = 'normal', title, sub, items = [], mediaType = 'movie', li
           if (type === 'play') {
             return (
               <HCard
-                key={item.id}
-                id={item.id}
-                type={mediaType}
-                title={item.title || item.name}
-                poster={item.backdrop_path || item.poster_path}
-                progress={item.progress || 0}
+                key={`h-${item.id}`}
+                {...commonProps}
+                poster={EP.img(item.backdrop_path || item.poster_path, 'w500')}
+                progress={item.progress || 30} // 이어보기 예시 데이터
+                vote_average={item.vote_average}
               />
             )
           }
 
           // Default: normal
           return (
-            <div key={item.id} className='min-w-72 md:min-w-80'>
+            <div key={`card-${item.id}`} className='min-w-72 md:min-w-80'>
               <MovieCard
-                id={item.id}
-                title={item.title || item.name}
+                {...commonProps}
                 genre={item.genre_ids?.[0]}
                 year={(item.release_date || item.first_air_date)?.slice(0, 4)}
-                posterUrl={item.poster_path}
+                posterUrl={EP.img(item.poster_path)}
               />
             </div>
           )
