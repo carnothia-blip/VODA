@@ -65,7 +65,7 @@ const Feed = ({ type = 'normal', title, subtitle, items = [], mediaType = 'movie
 
           // Default: normal
           return (
-            <div key={`card-${item.id}`} className='min-w-72 md:min-w-80'>
+            <div key={`card-${item.id}`} className='min-w-80'>
               <MovieCard
                 {...commonProps}
                 genre={item.genre_ids?.[0]}

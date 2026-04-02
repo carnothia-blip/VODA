@@ -20,13 +20,13 @@ const ReviewCardS = ({
 }) => {
   return (
     <div className={twMerge(
-      'bg-zinc-900 flex flex-col gap-6 p-9 rounded-[36px] w-full',
+      'bg-zinc-900 flex flex-col gap-6 p-9 rounded-4xl w-full',
       size === 'lg' && 'p-12'
     )}>
       {/* 상단: 유저 정보 + 별점 */}
       <div className='flex items-start justify-between'>
-        <div className='flex items-center gap-4.5'>
-          <div className='size-[60px] rounded-full overflow-hidden bg-zinc-700 flex items-center justify-center shrink-0'>
+        <div className='flex items-center gap-4'>
+          <div className='size-16 rounded-full overflow-hidden bg-zinc-700 flex items-center justify-center shrink-0'>
             {avatar ? (
               <img src={avatar} alt={author} className='size-full object-cover' />
             ) : (
@@ -39,7 +39,7 @@ const ReviewCardS = ({
           </div>
         </div>
 
-        <div className='flex items-center gap-1.5'>
+        <div className='flex items-center gap-2'>
           <FontAwesomeIcon icon={faStar} className='text-primary-400 text-lg' />
           <span className='font-sans font-bold text-2xl text-primary-400'>{rating}</span>
         </div>

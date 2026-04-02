@@ -4,7 +4,10 @@ from pydantic import BaseModel
 import requests, os
 from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, "..", ".env"))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
 app = FastAPI()
 
 app.add_middleware(
@@ -18,32 +21,39 @@ class Msg(BaseModel):
     text: str
 
 HF_MODEL = "Qwen/Qwen2.5-72B-Instruct"
-HF_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+HF_URL = "https://api-inference.huggingface.co/v1/chat/completions"
 
 def ask_ai(q: str) -> str:
     token = os.getenv("HF_TOKEN")
     if not token:
-        # 토큰이 없을 경우 개발용 테스트 응답을 반환하여 서버가 작동함을 보여줌
         return f"[테스트 모드] VODA AI입니다. 질문하신 '{q}'에 대한 답변을 준비 중입니다. (HF_TOKEN 설정 필요)"
         
-    headers = {"Authorization": f"Bearer {token}"}
-    # Inference API 방식에 맞는 payload 구성
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
     payload = {
-        "inputs": q,
-        "parameters": {"max_new_tokens": 300, "return_full_text": False}
+        "model": HF_MODEL,
+        "messages": [
+            {"role": "system", "content": "당신은 VODA 서비스의 친절한 영화 전문가 AI입니다. 한국어로 답변해주세요."},
+            {"role": "user", "content": q}
+        ],
+        "max_tokens": 500,
+        "temperature": 0.7
     }
     
     try:
-        res = requests.post(HF_URL, headers=headers, json=payload, timeout=20)
+        res = requests.post(HF_URL, headers=headers, json=payload, timeout=30)
         res.raise_for_status()
         data = res.json()
-        
-        # 응답 형태에 따라 처리 (List 형식으로 오는 경우 대응)
-        if isinstance(data, list) and len(data) > 0:
-            return data[0].get("generated_text", str(data[0]))
-        return str(data)
+        if "choices" in data and len(data["choices"]) > 0:
+            return data["choices"][0]["message"]["content"]
+        return f"오류: API 응답 형식이 예상과 다릅니다. ({data})"
     except Exception as e:
-        return f"AI 서비스 호출 중 오류가 발생했습니다: {str(e)}"
+        error_msg = str(e)
+        if hasattr(e, 'response') and e.response is not None:
+            error_msg += f" - 응답내용: {e.response.text}"
+        return f"AI 서비스 호출 중 오류가 발생했습니다: {error_msg}"
 
 @app.post("/chat")
 def chat(msg: Msg):

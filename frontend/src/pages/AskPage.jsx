@@ -22,23 +22,31 @@ const AskPage = () => {
   const handleSend = async () => {
     const trimmed = input.trim()
     if (!trimmed || loading) return
+
     setMessages((prev) => [...prev, { id: Date.now(), role: 'user', text: trimmed }])
     setInput('')
     setLoading(true)
+
     try {
       const res = await fetch(BACKEND, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: trimmed }),
       })
+
+      if (!res.ok) {
+        throw new Error(`서버 응답 오류 (상태코드: ${res.status})`)
+      }
+
       const data = await res.json()
       setMessages((prev) => [...prev, { id: Date.now(), role: 'ai', text: data.reply }])
-    } catch {
-      setMessages((prev) => [...prev, { id: Date.now(), role: 'ai', text: '서버 연결에 실패했습니다. 다시 시도해주세요.' }])
+    } catch (err) {
+      setMessages((prev) => [...prev, { id: Date.now(), role: 'ai', text: `연결 오류: ${err.message}. 백엔드 서버(8000번 포트)가 실행 중인지 확인해 주세요.` }])
     } finally {
       setLoading(false)
     }
   }
+
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {

@@ -11,15 +11,15 @@ const CastSection = ({ cast = [] }) => {
       </div>
 
       {/* 가로 스크롤 출연진 목록 */}
-      <div className='flex gap-18 items-start overflow-x-auto px-20 pb-2 scrollbar-hide'>
+      <div className='flex gap-16 items-start overflow-x-auto px-20 pb-2 scrollbar-hide'>
         {cast.map((actor) => (
           <Link
             key={actor.id}
             to={`/person/${actor.id}`}
-            className='flex flex-col items-center min-w-45 shrink-0'
+            className='flex flex-col items-center min-w-48 shrink-0'
           >
             {/* 프로필 이미지 — primary-400/30 테두리 + 원형 */}
-            <div className='mb-6 border-4 border-primary-400/30 rounded-full p-2.5 size-36'>
+            <div className='mb-6 border-4 border-primary-400/30 rounded-full p-2.5 size-40'>
               {actor.profile_path ? (
                 <img
                   src={EP.img(actor.profile_path)}
