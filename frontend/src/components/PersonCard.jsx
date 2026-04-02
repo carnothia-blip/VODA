@@ -1,26 +1,37 @@
 import { Link } from 'react-router'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { EP } from '../api/tmdb'
 
+/**
+ * PersonCard 컴포넌트
+ * @param {string|number} id - 인물 ID (상세 페이지 이동용)
+ * @param {string} name - 인물 이름
+ * @param {string} img - 인물 프로필 이미지 경로
+ * @param {string} role - 담당 역할 (배우/감독 등)
+ */
 const PersonCard = ({ id, name, img, role }) => {
   return (
-    <Link to={`/person/${id}`} className='w-44 flex-shrink-0 text-center block group'>
-      <div className='relative'>
-        {img ? (
-          <img
-            src={EP.img(img, 'w185')}
-            alt={name}
-            className='size-40 rounded-full object-cover mx-auto transition-transform duration-300 group-hover:scale-105'
-          />
-        ) : (
-          <div className='size-40 rounded-full bg-zinc-800 flex items-center justify-center mx-auto transition-transform duration-300 group-hover:scale-105'>
-            <FontAwesomeIcon icon={faUser} className='text-zinc-600 text-4xl' />
-          </div>
-        )}
+    <Link 
+      to={`/person/${id}`} 
+      className='w-80 flex-shrink-0 group block'
+    >
+      {/* 인물 프로필 이미지 컨테이너 */}
+      <div className='aspect-[3/4] rounded-3xl overflow-hidden bg-zinc-800'>
+        <img
+          src={EP.img(img)}
+          alt={name}
+          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105'
+        />
       </div>
-      <p className='mt-3 text-sm font-medium truncate text-white'>{name}</p>
-      <p className='text-xs text-zinc-400 truncate'>{role}</p>
+
+      {/* 인물 정보 영역 */}
+      <div className='mt-4'>
+        <h3 className='text-xl font-semibold text-zinc-50 truncate font-sans'>
+          {name}
+        </h3>
+        <p className='text-sm text-zinc-400 mt-1 font-serif'>
+          {role}
+        </p>
+      </div>
     </Link>
   )
 }
