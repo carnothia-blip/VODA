@@ -1,9 +1,10 @@
 import { Link } from 'react-router'
 import { EP } from '../api/tmdb'
 
-const RankCard = ({ rank, id, type = 'movie', title, poster, genre }) => {
+const RankCard = ({ rank, id, type = 'movie', title, poster, genre, onClick }) => {
+  const handleClick = onClick ? (e) => { e.preventDefault(); onClick() } : undefined
   return (
-    <Link to={`/${type}/${id}`} className='w-58 flex-shrink-0 relative block'>
+    <Link to={`/${type}/${id}`} onClick={handleClick} className='w-58 flex-shrink-0 relative block'>
       {/* 순위 숫자 (overflow-hidden 밖으로 이동하여 잘리지 않게 함) */}
       <span className='absolute -left-6 bottom-14 text-8xl font-bold text-white/80 font-sans drop-shadow-lg z-10'>
         {rank}
