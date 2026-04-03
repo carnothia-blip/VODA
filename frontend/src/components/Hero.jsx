@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { EP } from '../api/tmdb'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlay, faInfoCircle, faStar, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faPlay, faInfoCircle, faStar, faXmark, faPlus, faHeart } from '@fortawesome/free-solid-svg-icons'
 import DetailBtn from './DetailBtn'
 
 /**
@@ -32,20 +32,40 @@ const Hero = ({
   const location = useLocation()
   const [isTrailerOpen, setIsTrailerOpen] = useState(false)
   const [trailerKey, setTrailerKey] = useState(null)
+  const [isWishlisted, setIsWishlisted] = useState(false)
 
-  // 트레일러 찾기 (유튜브의 Trailer 타입 우선)
+  // 트레일러 및 예고편 찾기 (우선순위: Trailer > Teaser > Clip > YouTube 영상 전체)
   useEffect(() => {
+    const findBestTrailer = (vids) => {
+      if (!vids || vids.length === 0) return null
+      
+      // 1. 공식 트레일러 (YouTube)
+      const officialTrailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official)
+      if (officialTrailer) return officialTrailer.key
+
+      // 2. 일반 트레일러 (YouTube)
+      const trailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+      if (trailer) return trailer.key
+
+      // 3. 티저 (Teaser)
+      const teaser = vids.find(v => v.type === 'Teaser' && v.site === 'YouTube')
+      if (teaser) return teaser.key
+
+      // 4. 하이라이트 또는 클립 (Clip/Featurette)
+      const clip = vids.find(v => (v.type === 'Clip' || v.type === 'Featurette') && v.site === 'YouTube')
+      if (clip) return clip.key
+
+      // 5. 아무 유튜브 영상이나 첫 번째 거
+      const anyYoutube = vids.find(v => v.site === 'YouTube')
+      return anyYoutube ? anyYoutube.key : null
+    }
+
     if (videos && videos.length > 0) {
-      const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos[0]
-      if (trailer) setTrailerKey(trailer.key)
+      setTrailerKey(findBestTrailer(videos))
     } else if (id && type !== 'person' && type !== 'home') {
-      // 비디오 데이터가 없으면 직접 요청 (상세 페이지가 아닌 홈/영화 페이지용)
       EP.detail(type, id).then(res => {
         const vids = res.data.videos?.results
-        if (vids && vids.length > 0) {
-          const trailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube') || vids[0]
-          if (trailer) setTrailerKey(trailer.key)
-        }
+        setTrailerKey(findBestTrailer(vids))
       })
     }
   }, [videos, id, type])
@@ -160,6 +180,22 @@ const Hero = ({
             variant='primary'
             onClick={handleWatchNow}
           />
+          {/* 찜하기 버튼: 클릭 시 보라색으로 변경 */}
+          <button
+            onClick={() => setIsWishlisted(prev => !prev)}
+            className={`flex items-center justify-center gap-2 rounded-full font-semibold px-7 py-3.5 transition-all duration-200 cursor-pointer active:scale-95 ${
+              isWishlisted
+                ? 'bg-gradient-to-r from-primary-400 to-primary-500 text-white shadow-lg shadow-primary-500/20'
+                : 'bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-md'
+            }`}
+          >
+            <span className='text-xl flex items-center'>
+              <FontAwesomeIcon icon={isWishlisted ? faHeart : faPlus} />
+            </span>
+            <span className='font-serif tracking-tight'>
+              {isWishlisted ? '찜!' : '찜하기'}
+            </span>
+          </button>
           <DetailBtn
             label='상세 정보'
             icon={<FontAwesomeIcon icon={faInfoCircle} />}

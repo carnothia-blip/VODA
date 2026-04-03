@@ -81,7 +81,7 @@ const PersonPage = () => {
       </div>
 
       {/* 인물 그리드 섹션 */}
-      <div className="px-24">
+      <div className="px-12">
         <Feed
           type="person"
           title="오늘의 트렌딩 인물"
