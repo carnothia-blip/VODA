@@ -72,6 +72,7 @@ const TVPage = () => {
             sub='VODA에서 가장 많이 찾은 TV 랭킹'
             items={rankMovies}
             mediaType='tv'
+            link='/browse/tv/popular?title=지금+가장+뜨거운+TV'
           />
         )}
 
@@ -82,6 +83,11 @@ const TVPage = () => {
           sub='당신을 위해 엄선한 명작들'
           items={genreMovies}
           mediaType='tv'
+          link={
+            activeTab === 0
+              ? '/browse/tv/discover?title=추천+TV'
+              : `/browse/tv/discover?title=${encodeURIComponent(genres.find(g => g.id === activeTab)?.name + ' TV')}&genre=${activeTab}`
+          }
         />
 
         {/* 3. 신작 피드 */}
@@ -91,6 +97,7 @@ const TVPage = () => {
           sub='지금 방영 중인 최신 TV 시리즈'
           items={newMovies}
           mediaType='tv'
+          link='/browse/tv/on_the_air?title=막+올라온+따끈한+신작'
         />
       </div>
 

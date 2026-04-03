@@ -6,7 +6,7 @@ const SectionTitle = ({ title, subtitle, link = '#' }) => {
 
   return (
     <div className='flex items-center w-full py-10'>
-      {/* 왼쪽: 제목 + 부제목 (기존 디자인 유지) */}
+      {/* 왼쪽: 제목 + 부제목 */}
       <div className='flex-1 flex flex-col gap-3'>
 
         {/* 제목 행: 보라색 세로 바 + 타이틀 */}

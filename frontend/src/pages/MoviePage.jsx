@@ -69,7 +69,7 @@ const MoviePage = () => {
       />
 
       <div className='px-12 mt-12 flex flex-col gap-10'>
-        {/* 1. 랭킹 피드 (전체일 때만 표시하거나 상단 고정) */}
+        {/* 1. 랭킹 피드 */}
         {activeTab === 0 && (
           <Feed
             type='rank'
@@ -77,6 +77,7 @@ const MoviePage = () => {
             sub='VODA에서 가장 많이 찾은 영화 랭킹'
             items={rankMovies}
             mediaType='movie'
+            link='/browse/movie/popular?title=지금+가장+뜨거운+영화'
           />
         )}
 
@@ -87,6 +88,11 @@ const MoviePage = () => {
           sub='당신을 위해 엄선한 명작들'
           items={genreMovies}
           mediaType='movie'
+          link={
+            activeTab === 0
+              ? '/browse/movie/discover?title=추천+영화'
+              : `/browse/movie/discover?title=${encodeURIComponent(genres.find(g => g.id === activeTab)?.name + ' 영화')}&genre=${activeTab}`
+          }
         />
 
         {/* 3. 신작 피드 */}
@@ -96,6 +102,7 @@ const MoviePage = () => {
           sub='극장에서 갓 내려온 최신 영화들'
           items={newMovies}
           mediaType='movie'
+          link='/browse/movie/now_playing?title=막+올라온+따끈한+신작'
         />
 
         {/* [임시] ChatBubble 디자인 미리보기 섹션 */}

@@ -33,4 +33,12 @@ export const EP = {
 
   // TV 시즌
   season: (id, num) => ax.get(`/tv/${id}/season/${num}`),
+
+  // 전체보기 페이지용: 카테고리 + 페이지 번호
+  browsePage: (mediaType, category, page = 1, extra = {}) => {
+    if (category === 'discover') {
+      return ax.get(`/discover/${mediaType}`, { params: { ...extra, page } })
+    }
+    return ax.get(`/${mediaType}/${category}`, { params: { ...extra, page } })
+  },
 }

@@ -1,10 +1,10 @@
-import { twMerge } from "tailwind-merge";
-import SectionTitle from "./SectionTitle";
-import MovieCard from "./MovieCard";
-import RankCard from "./RankCard";
-import HCard from "./HCard";
-import PersonCard from "./PersonCard";
-import { EP } from "../api/tmdb";
+import { twMerge } from 'tailwind-merge'
+import SectionTitle from './SectionTitle'
+import MovieCard from './MovieCard'
+import RankCard from './RankCard'
+import HCard from './HCard'
+import PersonCard from './PersonCard'
+import { EP } from '../api/tmdb'
 
 /**
  * Feed 컴포넌트: 섹션 타이틀과 카드 리스트를 포함하는 공통 섹션
@@ -13,45 +13,40 @@ import { EP } from "../api/tmdb";
  * @param {string} subtitle - 부제목
  * @param {Array} items - 표시할 아이템 배열
  * @param {string} mediaType - 'movie' | 'tv' | 'person'
- * @param {string} link - 이동할 경로
+ * @param {string} link - 전체보기 이동 경로
  */
 const Feed = ({
-  type = "normal",
+  type = 'normal',
   title,
   subtitle,
   items = [],
-  mediaType = "movie",
-  link = "#",
+  mediaType = 'movie',
+  link = '#',
 }) => {
-  if (!items || items.length === 0) return null;
+  if (!items || items.length === 0) return null
 
   return (
-    <section className="w-full">
+    <section className='w-full'>
       <SectionTitle title={title} subtitle={subtitle} link={link} />
 
       {/* 카드 리스트 (가로 스크롤) */}
       <div
         className={twMerge(
-          "flex gap-6 overflow-x-auto pb-8 no-scrollbar pt-4",
-          type === "rank" && "gap-10",
-          type === "person" && "gap-8 px-2", // [수정] 인물 카드 간격 및 패딩
+          'flex gap-6 overflow-x-auto pb-8 no-scrollbar pt-4',
+          type === 'rank' && 'gap-10',
+          type === 'person' && 'gap-8 px-2',
         )}
       >
         {items.map((item, idx) => {
-          // 공통 변수 추출
           const commonProps = {
             id: item.id,
             type: mediaType,
             title: item.title || item.name,
-          };
+          }
 
-          // Feed.jsx 내 수정 부분
-          if (type === "person") {
+          if (type === 'person') {
             return (
-              <div
-                key={`person-${item.id}`}
-                className="w-80 shrink-0" // 표준 클래스 w-80(320px) 사용 권장
-              >
+              <div key={`person-${item.id}`} className='w-80 shrink-0'>
                 <PersonCard
                   id={item.id}
                   name={item.name}
@@ -59,44 +54,36 @@ const Feed = ({
                   role={item.known_for_department}
                 />
               </div>
-            );
+            )
           }
 
-          if (type === "rank") {
+          if (type === 'rank') {
             return (
               <RankCard
                 key={`rank-${item.id}`}
                 {...commonProps}
                 rank={idx + 1}
                 poster={EP.img(item.poster_path)}
-                genre={
-                  item.genre_ids?.[0]
-                    ? mediaType === "tv"
-                      ? "TV 시리즈"
-                      : "영화"
-                    : ""
-                }
+                genre={item.genre_ids?.[0] ? (mediaType === 'tv' ? 'TV 시리즈' : '영화') : ''}
               />
-            );
+            )
           }
 
-          if (type === "play") {
+          if (type === 'play') {
             return (
               <HCard
                 key={`h-${item.id}`}
                 {...commonProps}
-                poster={EP.img(item.backdrop_path || item.poster_path, "w500")}
+                poster={EP.img(item.backdrop_path || item.poster_path, 'w500')}
                 progress={item.progress || 30}
                 vote_average={item.vote_average}
               />
-            );
+            )
           }
 
-          // Default: normal (MovieCard 고정 너비 래퍼)
+          // normal
           return (
-            <div key={`card-${item.id}`} className="min-w-80 w-80 shrink-0">
-              {" "}
-              {/* 너비 고정 */}
+            <div key={`card-${item.id}`} className='min-w-80 w-80 shrink-0'>
               <MovieCard
                 {...commonProps}
                 genre={item.genre_ids?.[0]}
@@ -104,11 +91,11 @@ const Feed = ({
                 posterUrl={EP.img(item.poster_path)}
               />
             </div>
-          );
+          )
         })}
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Feed;
+export default Feed
