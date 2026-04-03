@@ -41,4 +41,11 @@ export const EP = {
     }
     return ax.get(`/${mediaType}/${category}`, { params: { ...extra, page } })
   },
+
+  // 인물 전체보기용
+  browsePerson: (category, page = 1) => {
+    if (category === 'trending_day') return ax.get('/trending/person/day', { params: { page } })
+    if (category === 'trending_week') return ax.get('/trending/person/week', { params: { page } })
+    return ax.get('/person/popular', { params: { page } })
+  },
 }

@@ -109,6 +109,7 @@ const PersonPage = () => {
           title="오늘의 트렌딩 인물"
           items={persons}
           mediaType="person"
+          link="/person/category?title=오늘의+트렌딩+인물&category=trending_day"
         />
         {/* 이번 주 트렌딩 인물 */}
         <Feed
@@ -116,6 +117,7 @@ const PersonPage = () => {
           title="이번 주 트렌딩 인물"
           items={weekTrending}
           mediaType="person"
+          link="/person/category?title=이번+주+트렌딩+인물&category=trending_week"
         />{" "}
       </div>
 
@@ -124,6 +126,7 @@ const PersonPage = () => {
         <SectionTitle
           title="포커스 인물"
           subtitle="VODA가 주목하는 이번 주 인물 기획전"
+          link="/person/category?title=포커스+인물&category=popular"
         />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
