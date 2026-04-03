@@ -88,7 +88,8 @@ const ProfilePage = () => {
             <ReviewCard 
               key={review.id}
               title={review.title}
-              image={EP.img(review.image, 'w200')} // ReviewCard에는 완성된 URL 전달
+              // 사진 대신 회색 배경의 기본 아이콘 사용
+              image={null} 
               date={review.date}
               rating={review.rating}
               content={review.content}
