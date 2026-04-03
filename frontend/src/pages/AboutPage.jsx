@@ -37,8 +37,8 @@ const AboutPage = () => {
   // 🔥 [수정] 의존성 배열에 activeSeason을 추가하여 시즌 변경 시 재호출되도록 함
   const isTv = type === "tv";
   const { data: seasonData } = useFetch(
-    isTv ? () => EP.season(id, activeSeason) : null, 
-    [isTv, id, activeSeason] 
+    isTv ? () => EP.season(id, activeSeason) : null,
+    [isTv, id, activeSeason],
   );
 
   // 로딩 및 에러 처리 (기존 로직 유지)
@@ -103,13 +103,16 @@ const AboutPage = () => {
         {isTv && seasonData && (
           <EpisodeSection
             episodes={seasonData.episodes}
-            seasons={data.seasons} 
+            seasons={data.seasons}
             activeSeason={activeSeason}
-            onSeasonChange={(num) => setActiveSeason(num)}
+            // expandAll 인자를 받을 수 있도록 구조 변경 (기본값 false)
+            onSeasonChange={(num, expandAll = false) => {
+              setActiveSeason(num);
+              // 만약 EpisodeSection 자체적으로 expandAll을 처리한다면 여기는 setActiveSeason만 있어도 무방합니다.
+            }}
             showTitle={true}
           />
         )}
-
         {/* 평점 및 리뷰 통합 섹션 (기존 로직 유지) */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start pt-6">
           <div className="lg:col-span-1 flex flex-col justify-start">

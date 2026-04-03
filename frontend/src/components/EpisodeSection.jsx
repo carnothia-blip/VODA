@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react' // 👈 useEffect 추가
-import EpisodeCard from './EpisodeCard'
-import SeasonButton from './SeasonButton'
+import React, { useState, useEffect } from "react"; // 👈 useEffect 추가
+import EpisodeCard from "./EpisodeCard";
+import SeasonButton from "./SeasonButton";
 
 /**
  * EpisodeSection 컴포넌트 (Figma: Section_ep_list, node-id: 362:8167)
@@ -10,70 +10,73 @@ import SeasonButton from './SeasonButton'
  * @param {function} onSeasonChange - 시즌 변경 시 실행할 핸들러
  * @param {boolean} showTitle - 상단 타이틀 노출 여부 (기본값: true)
  */
-const EpisodeSection = ({ 
-  episodes = [], 
-  seasons = [], 
-  activeSeason = 1, 
-  onSeasonChange, 
-  showTitle = true 
+const EpisodeSection = ({
+  episodes = [],
+  seasons = [],
+  activeSeason = 1,
+  onSeasonChange,
+  showTitle = true,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // 🔥 [VODA 지침] 시즌이 바뀌면 '더보기' 상태를 리셋하고 리스트 상단으로 인지하게 함
   useEffect(() => {
-    setIsExpanded(false)
-  }, [activeSeason])
+    setIsExpanded(false);
+  }, [activeSeason]);
 
   // 데이터 방어 코드
-  if (!episodes || episodes.length === 0) return null
+  if (!episodes || episodes.length === 0) return null;
 
-  const displayedEpisodes = isExpanded ? episodes : episodes.slice(0, 5)
+  const displayedEpisodes = isExpanded ? episodes : episodes.slice(0, 5);
 
   return (
-    <section className='px-20 py-8 w-full bg-zinc-950'>
+    <section className="px-20 py-8 w-full bg-zinc-950">
       {showTitle && (
-        <div className='mb-8 flex items-center justify-between'>
-          <h2 className='text-xl font-bold text-zinc-50'>
-            에피소드 <span className='ml-2 text-zinc-500 font-medium text-lg'>{episodes.length}</span>
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-zinc-50">
+            에피소드{" "}
+            <span className="ml-2 text-zinc-500 font-medium text-lg">
+              {episodes.length}
+            </span>
           </h2>
-          
-          <SeasonButton 
-            seasons={seasons} 
-            activeSeason={activeSeason} 
-            onSeasonChange={(num) => {
-              // onSeasonChange는 부모의 fetch 로직을 트리거해야 함
-              if (onSeasonChange) onSeasonChange(num)
-            }} 
-          />
+          <SeasonButton
+            seasons={seasons}
+            activeSeason={activeSeason}
+            onSeasonChange={(num, expandAll = false) => {
+              // expandAll이 true로 넘어오면 더보기 상태를 즉시 true로 변경
+              setIsExpanded(expandAll);
+              onSeasonChange(num);
+            }}
+          />{" "}
         </div>
       )}
 
-      <div className='flex flex-col gap-6'>
+      <div className="flex flex-col gap-6">
         {displayedEpisodes.map((item) => (
           <EpisodeCard
             key={item.id}
             ep={item.episode_number}
             title={item.name}
             thumb={item.still_path}
-            duration={item.runtime ? `${item.runtime}분` : '정보 없음'}
-            overview={item.overview || '에피소드 줄거리가 없습니다.'}
-            showStatus={false} 
+            duration={item.runtime ? `${item.runtime}분` : "정보 없음"}
+            overview={item.overview || "에피소드 줄거리가 없습니다."}
+            showStatus={false}
           />
         ))}
       </div>
 
       {!isExpanded && episodes.length > 5 && (
-        <div className='mt-10 flex justify-center'>
-          <button 
+        <div className="mt-10 flex justify-center">
+          <button
             onClick={() => setIsExpanded(true)}
-            className='px-12 py-4 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 font-serif text-lg hover:bg-zinc-800 hover:text-primary-400 transition-all cursor-pointer'
+            className="px-12 py-4 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 font-serif text-lg hover:bg-zinc-800 hover:text-primary-400 transition-all cursor-pointer"
           >
             에피소드 더보기 ({episodes.length - 5}개)
           </button>
         </div>
       )}
     </section>
-  )
-}
+  );
+};
 
-export default EpisodeSection
+export default EpisodeSection;
