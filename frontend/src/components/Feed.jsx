@@ -44,9 +44,9 @@ const Feed = ({
         onDragStart={onDragStart}
         onClickCapture={onClickCapture}
         className={twMerge(
-          "flex gap-6 overflow-x-auto pb-8 no-scrollbar pt-4 cursor-grab active:cursor-grabbing select-none",
-          type === "rank" && "gap-10",
-          type === "person" && "gap-8 px-2", 
+          'flex gap-6 overflow-x-auto pb-8 no-scrollbar pt-4 cursor-grab active:cursor-grabbing select-none',
+          type === 'rank' && 'gap-10 pl-10', 
+          type === 'person' && 'gap-8 px-2', 
         )}
       >
         {items.map((item, idx) => {

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faBell, faUser, faCog, faChevronRight, faArrowRightFromBracket
 } from '@fortawesome/free-solid-svg-icons'
+import { EP } from '../api/tmdb'
 
 // ✅ 지침 반영: 컴포넌트 외부로 추출
 const Toggle = ({ on, onToggle }) => (
@@ -21,7 +22,7 @@ const CardTitle = ({ icon, title }) => (
   </div>
 )
 
-const ProfileGrid = ({ user, onLogout }) => {
+const ProfileGrid = ({ user, movies = [], onLogout }) => {
   const [alarmSettings, setAlarmSettings] = useState({
     curation: true,
     interest: true,
@@ -41,9 +42,22 @@ const ProfileGrid = ({ user, onLogout }) => {
     <div className='flex flex-col gap-10 w-full max-w-screen-2xl mx-auto'>
 
       {/* 1. 상단 프로필 히어로 */}
-      {/* ✅ rounded-[40px] -> rounded-3xl로 수정 */}
-      <div className='bg-neutral-900/50 border border-white/5 flex items-center justify-between p-10 rounded-3xl'>
-        <div className='flex items-center gap-8'>
+      <div className='relative bg-neutral-900/50 border border-white/5 flex items-center justify-between p-10 rounded-3xl overflow-hidden'>
+        
+        {/* 배경 장식 (영화 포스터 그리드 - 우측 배치) */}
+        <div className='absolute right-[-20px] top-[-20px] bottom-[-20px] w-1/3 flex gap-2 opacity-20 pointer-events-none skew-x-[-12deg]'>
+          {movies.slice(0, 3).map((movie, idx) => (
+            <div key={movie.id} className={`w-full h-full rounded-xl overflow-hidden border border-white/10 ${idx === 1 ? 'mt-12' : idx === 2 ? 'mt-24' : ''}`}>
+              <img 
+                src={EP.img(movie.poster_path, 'w500')} 
+                alt='' 
+                className='w-full h-full object-cover'
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className='relative z-10 flex items-center gap-8'>
           <div className='size-24 rounded-full bg-linear-to-br from-primary-400 to-secondary-400 p-0.5 shadow-glow-purple'>
             <div className='w-full h-full rounded-full bg-neutral-800 flex items-center justify-center text-3xl font-bold text-white'>
               {user?.name?.[0] || 'U'}
@@ -59,14 +73,13 @@ const ProfileGrid = ({ user, onLogout }) => {
             )}
           </div>
         </div>
-        <div className='flex items-center gap-4'>
-          {/* 구독 플랜 버튼 추가 */}
+
+        <div className='relative z-10 flex items-center gap-4'>
           <button className='bg-primary-500/10 text-primary-400 font-serif font-bold px-8 py-3 rounded-full hover:bg-primary-500/20 border border-primary-500/30 transition-colors cursor-pointer flex items-center gap-2'>
-            {/* <i className='fa-solid fa-crown text-primary-400'></i> */}
             구독 플랜
           </button>
 
-          <button className='bg-zinc-900 border border-[#525254] text-zinc-300 font-serif font-bold px-8 py-3 rounded-full hover:bg-zinc-800 hover:text-zinc-50 transition-colors cursor-pointer'>
+          <button className='bg-zinc-900 border border-neutral-600 text-zinc-300 font-serif font-bold px-8 py-3 rounded-full hover:bg-zinc-800 hover:text-zinc-50 transition-colors cursor-pointer'>
             프로필 편집
           </button>
         </div>
@@ -74,8 +87,8 @@ const ProfileGrid = ({ user, onLogout }) => {
 
       {/* 2. 설정 카드 그리드 */}
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-
-        <div className='bg-zinc-900/40 p-8 rounded-[32px] border border-white/5 shadow-lg flex flex-col gap-8'>
+        {/* 알림 설정 */}
+        <div className='bg-zinc-900/40 p-8 rounded-36 border border-white/5 shadow-lg flex flex-col gap-8'>
           <CardTitle icon={faBell} title='알림 설정' />
           <div className='flex flex-col gap-6'>
             {[
@@ -91,7 +104,8 @@ const ProfileGrid = ({ user, onLogout }) => {
           </div>
         </div>
 
-        <div className='bg-zinc-900/40 p-8 rounded-[32px] border border-white/5 shadow-lg flex flex-col gap-8'>
+        {/* 계정 관리 */}
+        <div className='bg-zinc-900/40 p-8 rounded-36 border border-white/5 shadow-lg flex flex-col gap-8'>
           <CardTitle icon={faUser} title='계정 관리' />
           <div className='flex flex-col gap-3 -mx-4'>
             {['이메일 주소 변경', '비밀번호 재설정', '결제 수단 관리', '구독 해지'].map(label => (
@@ -103,10 +117,10 @@ const ProfileGrid = ({ user, onLogout }) => {
           </div>
         </div>
 
-        <div className='bg-zinc-900/40 p-8 rounded-[32px] border border-white/5 shadow-lg flex flex-col gap-8'>
+        {/* 시청 환경 */}
+        <div className='bg-zinc-900/40 p-8 rounded-36 border border-white/5 shadow-lg flex flex-col gap-8'>
           <CardTitle icon={faCog} title='시청 환경' />
           <div className='flex flex-col gap-2 -mx-4'>
-            {/* 1. 토글형 설정들 (패딩 조절하여 버튼과 라인 맞춤) */}
             <div className='flex flex-col gap-6 px-4 mb-4'>
               {[
                 { key: 'subtitle', label: '자막 자동 활성화' },
@@ -120,7 +134,6 @@ const ProfileGrid = ({ user, onLogout }) => {
               ))}
             </div>
 
-            {/* 2. 이동형 설정들 (계정 관리와 동일한 버튼 스타일) */}
             {[
               { label: '언어 설정' },
               { label: '화질 우선순위' }
@@ -128,7 +141,6 @@ const ProfileGrid = ({ user, onLogout }) => {
               <button key={item.label} className='flex items-center justify-between w-full px-4 py-3 rounded-2xl hover:bg-white/5 transition-colors group cursor-pointer'>
                 <div className='flex flex-col items-start'>
                   <span className='text-zinc-500 font-serif text-[17px] group-hover:text-primary-300 transition-colors'>{item.label}</span>
-                  <span className='text-primary-400/60 font-serif text-xs'>{item.value}</span>
                 </div>
                 <FontAwesomeIcon icon={faChevronRight} className='text-primary-400/50 text-sm group-hover:text-primary-400 transition-colors' />
               </button>
@@ -137,7 +149,7 @@ const ProfileGrid = ({ user, onLogout }) => {
         </div>
       </div>
 
-      {/* 3. 하단 액션 - 상단 그리드 전체 너비에 맞춤 및 좌측 정렬 */}
+      {/* 3. 하단 액션 */}
       <div className='flex flex-col gap-3 pt-4 w-full'>
         <button
           onClick={onLogout}
