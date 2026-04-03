@@ -14,9 +14,12 @@ import EpisodeSection from "../components/EpisodeSection";
  * AboutPage - 콘텐츠 상세 정보 페이지 (영화/TV 공용)
  */
 const AboutPage = () => {
-  // 1. URL 파라미터 추출 (type: movie 또는 tv, id: 콘텐츠 ID)
+  // 1. URL 파라미터 추출
   const { type, id } = useParams();
   const [showAll, setShowAll] = useState(false);
+
+  // 🔥 1.5. 현재 선택된 시즌 상태 관리 (기본값: 시즌 1)
+  const [activeSeason, setActiveSeason] = useState(1);
 
   // 2. 상세 데이터 호출 (credits, reviews, videos, similar 포함)
   const { data, loading, err } = useFetch(
@@ -30,14 +33,15 @@ const AboutPage = () => {
     [type, id],
   );
 
-  // 3. TV 시리즈일 경우 시즌 1 에피소드 데이터 추가 호출
+  // 3. TV 시리즈일 경우 에피소드 데이터 호출
+  // 🔥 [수정] 의존성 배열에 activeSeason을 추가하여 시즌 변경 시 재호출되도록 함
   const isTv = type === "tv";
-  const { data: seasonData } = useFetch(isTv ? () => EP.season(id, 1) : null, [
-    isTv,
-    id,
-  ]);
+  const { data: seasonData } = useFetch(
+    isTv ? () => EP.season(id, activeSeason) : null, 
+    [isTv, id, activeSeason] 
+  );
 
-  // 로딩 및 에러 처리
+  // 로딩 및 에러 처리 (기존 로직 유지)
   if (loading)
     return (
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center text-zinc-400">
@@ -51,21 +55,20 @@ const AboutPage = () => {
       </div>
     );
 
-  // 리뷰 병합 (한국어 + 영어)
+  // 리뷰 병합 및 중복 제거 (기존 로직 유지)
   const combinedReviews = [
     ...(data.reviews?.results || []),
     ...(enReviewsData?.results || []),
   ];
-  // 중복 제거 (id 기준)
   const uniqueReviews = combinedReviews.filter(
     (r, idx, self) => idx === self.findIndex((t) => t.id === r.id),
   );
 
   return (
     <main className="bg-neutral-950 min-h-screen pb-20">
-      {/* 히어로 섹션: 배경 이미지 및 타이틀 표시 */}
+      {/* 히어로 섹션 (기존 로직 유지) */}
       <Hero
-        type="detail" // 👈 이 부분을 'detail'로 고정하세요
+        type="detail"
         id={id}
         title={data.title || data.name}
         backdrop={data.backdrop_path}
@@ -75,7 +78,7 @@ const AboutPage = () => {
       />
 
       <div className="px-20 space-y-16 mt-12">
-        {/* 시놉시스 및 상세 정보 (장르, 출시일, 러닝타임) */}
+        {/* 시놉시스 섹션 (기존 로직 유지) */}
         <div id="synopsis">
           <Synopsis
             overview={data.overview}
@@ -92,20 +95,23 @@ const AboutPage = () => {
           />
         </div>
 
-        {/* 출연진 섹션 (최대 10명 표시) */}
+        {/* 출연진 섹션 (기존 로직 유지) */}
         <CastSection cast={data.credits?.cast?.slice(0, 10)} />
 
         {/* TV 시리즈 전용 에피소드 목록 섹션 */}
+        {/* 🔥 [수정] EpisodeSection에 필요한 props(seasons, activeSeason, onSeasonChange) 전달 */}
         {isTv && seasonData && (
           <EpisodeSection
             episodes={seasonData.episodes}
-            showTitle={data.name}
+            seasons={data.seasons} 
+            activeSeason={activeSeason}
+            onSeasonChange={(num) => setActiveSeason(num)}
+            showTitle={true}
           />
         )}
 
-        {/* 평점 및 리뷰 통합 섹션 */}
+        {/* 평점 및 리뷰 통합 섹션 (기존 로직 유지) */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start pt-6">
-          {/* 좌측: 평점 요약 (1/3 너비) - 배경 제거 */}
           <div className="lg:col-span-1 flex flex-col justify-start">
             <ScoreSummary
               avg={data.vote_average}
@@ -114,7 +120,6 @@ const AboutPage = () => {
             />
           </div>
 
-          {/* 우측: 주요 리뷰 (2/3 너비) */}
           <div className="lg:col-span-2 flex flex-col gap-5">
             {(showAll ? uniqueReviews : uniqueReviews.slice(0, 2)).map(
               (review) => (
@@ -132,7 +137,6 @@ const AboutPage = () => {
               ),
             )}
 
-            {/* 리뷰 더보기/접기 버튼 */}
             {uniqueReviews.length > 2 && (
               <button
                 onClick={() => setShowAll(!showAll)}
@@ -154,7 +158,7 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* 하단 비슷한 작품 피드 */}
+        {/* 하단 비슷한 작품 피드 (기존 로직 유지) */}
         <Feed
           type="normal"
           title="비슷한 작품"

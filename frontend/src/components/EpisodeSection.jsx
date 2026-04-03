@@ -1,30 +1,55 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react' // 👈 useEffect 추가
 import EpisodeCard from './EpisodeCard'
+import SeasonButton from './SeasonButton'
 
 /**
  * EpisodeSection 컴포넌트 (Figma: Section_ep_list, node-id: 362:8167)
  * @param {Array} episodes - TMDB 에피소드 데이터 배열
+ * @param {Array} seasons - TMDB 전체 시즌 데이터 배열
+ * @param {number} activeSeason - 현재 선택된 시즌 번호
+ * @param {function} onSeasonChange - 시즌 변경 시 실행할 핸들러
  * @param {boolean} showTitle - 상단 타이틀 노출 여부 (기본값: true)
  */
-const EpisodeSection = ({ episodes = [], showTitle = true }) => {
+const EpisodeSection = ({ 
+  episodes = [], 
+  seasons = [], 
+  activeSeason = 1, 
+  onSeasonChange, 
+  showTitle = true 
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false)
   
-  // 데이터가 없을 경우를 위한 방어 코드 (오류 방지)
+  // 🔥 [VODA 지침] 시즌이 바뀌면 '더보기' 상태를 리셋하고 리스트 상단으로 인지하게 함
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [activeSeason])
+
+  // 데이터 방어 코드
   if (!episodes || episodes.length === 0) return null
+
+  const displayedEpisodes = isExpanded ? episodes : episodes.slice(0, 5)
 
   return (
     <section className='px-20 py-8 w-full bg-zinc-950'>
-      {/* 1. 상단 헤더: showTitle이 true일 때만 노출 */}
       {showTitle && (
-        <div className='mb-8'>
+        <div className='mb-8 flex items-center justify-between'>
           <h2 className='text-xl font-bold text-zinc-50'>
             에피소드 <span className='ml-2 text-zinc-500 font-medium text-lg'>{episodes.length}</span>
           </h2>
+          
+          <SeasonButton 
+            seasons={seasons} 
+            activeSeason={activeSeason} 
+            onSeasonChange={(num) => {
+              // onSeasonChange는 부모의 fetch 로직을 트리거해야 함
+              if (onSeasonChange) onSeasonChange(num)
+            }} 
+          />
         </div>
       )}
 
-      {/* 2. 에피소드 리스트 (레고 블록 쌓기) */}
       <div className='flex flex-col gap-6'>
-        {episodes.map((item) => (
+        {displayedEpisodes.map((item) => (
           <EpisodeCard
             key={item.id}
             ep={item.episode_number}
@@ -32,11 +57,21 @@ const EpisodeSection = ({ episodes = [], showTitle = true }) => {
             thumb={item.still_path}
             duration={item.runtime ? `${item.runtime}분` : '정보 없음'}
             overview={item.overview || '에피소드 줄거리가 없습니다.'}
-            // 시청 기록 데이터가 연동될 경우 여기에 progress 전달 가능
             showStatus={false} 
           />
         ))}
       </div>
+
+      {!isExpanded && episodes.length > 5 && (
+        <div className='mt-10 flex justify-center'>
+          <button 
+            onClick={() => setIsExpanded(true)}
+            className='px-12 py-4 rounded-full border border-zinc-800 bg-zinc-900/50 text-zinc-400 font-serif text-lg hover:bg-zinc-800 hover:text-primary-400 transition-all cursor-pointer'
+          >
+            에피소드 더보기 ({episodes.length - 5}개)
+          </button>
+        </div>
+      )}
     </section>
   )
 }
