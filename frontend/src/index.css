@@ -60,6 +60,18 @@
   --width-card-sm: 22.5rem;
   --width-card-md: 25.625rem;
   --spacing-110: 27.5rem;
+
+  /* VODA 추가 토큰 — 임의값 방지 */
+  --radius-18: 1.125rem;
+  --radius-36: 2.25rem;
+  --border-width-1.5: 1.5px;
+  
+  /* 자간 및 행간 */
+  --letter-spacing-widest-plus: 0.1rem; /* 1.6px */
+  --leading-60: 3.75rem; /* 60px */
+
+  /* 폰트 사이즈 */
+  --font-size-2xs: 0.625rem; /* 10px */
 }
 
 @utility scrollbar-hide {
