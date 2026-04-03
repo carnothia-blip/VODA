@@ -51,6 +51,8 @@ const MoviePage = () => {
       {/* 히어로 섹션 */}
       {heroMovie && (
         <Hero
+          type='movie'
+          id={heroMovie.id}
           title={heroMovie.title}
           backdrop={heroMovie.backdrop_path}
           poster={heroMovie.poster_path}

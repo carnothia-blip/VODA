@@ -46,6 +46,8 @@ const TVPage = () => {
       {/* 히어로 섹션 */}
       {heroMovie && (
         <Hero
+          type='tv'
+          id={heroMovie.id}
           title={heroMovie.name}
           backdrop={heroMovie.backdrop_path}
           poster={heroMovie.poster_path}

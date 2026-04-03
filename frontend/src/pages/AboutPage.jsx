@@ -32,22 +32,28 @@ const AboutPage = () => {
       {/* 히어로 섹션: 배경 이미지 및 타이틀 표시 */}
       <Hero 
         type={type} 
+        id={id}
         title={data.title || data.name}
         backdrop={data.backdrop_path}
+        overview={data.overview}
+        rating={data.vote_average}
+        videos={data.videos?.results}
       />
 
       <div className='px-20 space-y-16 mt-12'>
         {/* 시놉시스 및 상세 정보 (장르, 출시일, 러닝타임) */}
-        <Synopsis 
-          overview={data.overview}
-          genres={data.genres}
-          country={data.production_countries?.[0]?.name}
-          year={(data.release_date || data.first_air_date)?.slice(0, 4)}
-          runtime={data.runtime || (data.episode_run_time && data.episode_run_time[0])}
-          director={data.credits?.crew?.find(c => c.job === 'Director')}
-          company={data.production_companies?.[0]?.name}
-          cast={data.credits?.cast?.slice(0, 5).map(c => c.name)}
-        />
+        <div id='synopsis'>
+          <Synopsis 
+            overview={data.overview}
+            genres={data.genres}
+            country={data.production_countries?.[0]?.name}
+            year={(data.release_date || data.first_air_date)?.slice(0, 4)}
+            runtime={data.runtime || (data.episode_run_time && data.episode_run_time[0])}
+            director={data.credits?.crew?.find(c => c.job === 'Director')}
+            company={data.production_companies?.[0]?.name}
+            cast={data.credits?.cast?.slice(0, 5).map(c => c.name)}
+          />
+        </div>
 
         {/* 출연진 섹션 (최대 10명 표시) */}
         <CastSection cast={data.credits?.cast?.slice(0, 10)} />
