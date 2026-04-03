@@ -32,46 +32,51 @@ const ScoreSummary = ({ avg = 0, count = 0, reviews = [] }) => {
   const dist = calcDist(reviews)
 
   return (
-    <div className='flex flex-col gap-12 w-full'>
+    <div className='flex flex-col gap-8 w-full'>
+      {/* 상단 타이틀 (크기 키움) */}
+      <div className='flex items-center gap-3 mb-2'>
+        <div className='w-2.5 h-8 bg-primary-400 rounded-full' />
+        <h3 className='font-serif font-bold text-3xl text-zinc-50 tracking-tight'>VODA 평점</h3>
+      </div>
 
       {/* 평균 점수 + 별 + 평가 수 */}
-      <div className='flex gap-6 items-end'>
-        <span className='text-neutral-50 font-serif font-bold text-9xl leading-none'>
-          {score}
-        </span>
+      <div className='flex flex-col gap-4'>
+        <div className='flex gap-5 items-end'>
+          <span className='text-neutral-50 font-serif font-bold text-8xl leading-none tracking-tighter'>
+            {score}
+          </span>
 
-        <div className='flex flex-col pb-3'>
-          {/* 별 5개 — 채운 별: primary-300 / 빈 별: neutral-700 */}
-          <div className='flex gap-1'>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <FontAwesomeIcon
-                key={i}
-                icon={faStar}
-                className={`text-2xl ${i < starFilled ? 'text-primary-300' : 'text-neutral-700'}`}
-              />
-            ))}
+          <div className='flex flex-col pb-1'>
+            <div className='flex gap-0.5'>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <FontAwesomeIcon
+                  key={i}
+                  icon={faStar}
+                  className={`text-lg ${i < starFilled ? 'text-primary-300' : 'text-neutral-800'}`}
+                />
+              ))}
+            </div>
+
+            <p className='text-neutral-400 text-xs font-serif font-bold uppercase mt-1'>
+              {count.toLocaleString()} 개의 평가
+            </p>
           </div>
-
-          {/* 평가 수 */}
-          <p className='text-neutral-400 text-lg font-serif font-bold uppercase mt-1.5'>
-            {count.toLocaleString()} Ratings
-          </p>
         </div>
       </div>
 
       {/* 별점 분포 차트 */}
       <div className='flex flex-col gap-4 w-full'>
         {dist.map(({ star, pct }, idx) => (
-          <div key={star} className='flex gap-6 items-center'>
+          <div key={star} className='flex gap-4 items-center'>
             {/* 별점 라벨 */}
-            <span className='text-neutral-400 text-lg font-serif font-bold w-6 shrink-0 text-right'>
+            <span className='text-neutral-400 text-lg font-serif font-bold w-4 shrink-0 text-right leading-none'>
               {star}
             </span>
 
-            {/* 트랙 + 채우기 바 */}
-            <div className='flex-1 h-3 bg-neutral-900 rounded-full overflow-hidden'>
+            {/* 트랙 + 채우기 바 (빈 게이지 시인성 강화: bg-zinc-800) */}
+            <div className='flex-1 h-2.5 bg-zinc-800 rounded-full overflow-hidden'>
               <div
-                className={`h-full rounded-full ${BAR_COLORS[idx]}`}
+                className={`h-full rounded-full transition-all duration-500 ${BAR_COLORS[idx]}`}
                 style={{ width: `${pct}%` }}
               />
             </div>
