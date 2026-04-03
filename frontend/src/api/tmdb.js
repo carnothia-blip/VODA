@@ -17,6 +17,7 @@ export const EP = {
   detail: (type, id) => ax.get(`/${type}/${id}`, {
     params: { append_to_response: 'credits,reviews,videos,similar' }
   }),
+  reviews: (type, id, lang = 'en-US') => ax.get(`/${type}/${id}/reviews`, { params: { language: lang } }),
 
   // 검색/필터
   search: (q) => ax.get('/search/multi', { params: { query: q } }),

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams } from 'react-router'
 import { EP } from '../api/tmdb'
 import useFetch from '../hooks/useFetch'
@@ -5,7 +6,7 @@ import Hero from '../components/Hero'
 import Synopsis from '../components/Synopsis-ls'
 import CastSection from '../components/CastSection'
 import ScoreSummary from '../components/ScoreSummary'
-import ReviewCard from '../components/ReviewCard'
+import ReviewCardS from '../components/ReviewCardS'
 import Feed from '../components/Feed'
 import EpisodeSection from '../components/EpisodeSection'
 
@@ -15,9 +16,13 @@ import EpisodeSection from '../components/EpisodeSection'
 const AboutPage = () => {
   // 1. URL 파라미터 추출 (type: movie 또는 tv, id: 콘텐츠 ID)
   const { type, id } = useParams()
+  const [showAll, setShowAll] = useState(false)
 
   // 2. 상세 데이터 호출 (credits, reviews, videos, similar 포함)
   const { data, loading, err } = useFetch(() => EP.detail(type, id), [type, id])
+
+  // 2.5. 한국어 리뷰가 없는 경우가 많아 영어 리뷰 추가 호출
+  const { data: enReviewsData } = useFetch(() => EP.reviews(type, id, 'en-US'), [type, id])
 
   // 3. TV 시리즈일 경우 시즌 1 에피소드 데이터 추가 호출
   const isTv = type === 'tv'
@@ -26,6 +31,16 @@ const AboutPage = () => {
   // 로딩 및 에러 처리
   if (loading) return <div className='min-h-screen bg-neutral-950 flex items-center justify-center text-zinc-400'>Loading...</div>
   if (err || !data) return <div className='min-h-screen bg-neutral-950 flex items-center justify-center text-red-500'>데이터를 불러오는 중 오류가 발생했습니다.</div>
+
+  // 리뷰 병합 (한국어 + 영어)
+  const combinedReviews = [
+    ...(data.reviews?.results || []),
+    ...(enReviewsData?.results || [])
+  ]
+  // 중복 제거 (id 기준)
+  const uniqueReviews = combinedReviews.filter((r, idx, self) => 
+    idx === self.findIndex((t) => t.id === r.id)
+  )
 
   return (
     <main className='bg-neutral-950 min-h-screen pb-20'>
@@ -66,30 +81,44 @@ const AboutPage = () => {
           />
         )}
 
-        {/* 평점 요약 섹션 */}
-        <div className='flex justify-center'>
-          <ScoreSummary 
-            avg={data.vote_average} 
-            count={data.vote_count} 
-            reviews={data.reviews?.results}
-          />
-        </div>
+        {/* 평점 및 리뷰 통합 섹션 */}
+        <section className='grid grid-cols-1 lg:grid-cols-3 gap-12 items-start pt-6'>
+          {/* 좌측: 평점 요약 (1/3 너비) - 배경 제거 */}
+          <div className='lg:col-span-1 flex flex-col justify-start'>
+            <ScoreSummary 
+              avg={data.vote_average} 
+              count={data.vote_count} 
+              reviews={uniqueReviews}
+            />
+          </div>
 
-        {/* 리뷰 섹션 */}
-        <section>
-          <h2 className='text-xl font-bold text-zinc-50 mb-6 font-sans'>사용자 리뷰</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {data.reviews?.results?.slice(0, 4).map(review => (
-              <ReviewCard 
+          {/* 우측: 주요 리뷰 (2/3 너비) */}
+          <div className='lg:col-span-2 flex flex-col gap-5'>
+            {(showAll ? uniqueReviews : uniqueReviews.slice(0, 2)).map(review => (
+              <ReviewCardS 
                 key={review.id}
                 author={review.author}
-                content={review.content}
+                avatar={EP.img(review.author_details?.avatar_path, 'w200')}
+                date={new Date(review.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
                 rating={review.author_details?.rating}
-                date={review.created_at}
+                content={review.content}
               />
             ))}
-            {(!data.reviews?.results || data.reviews.results.length === 0) && (
-              <p className='text-zinc-500'>작성된 리뷰가 없습니다.</p>
+
+            {/* 리뷰 더보기/접기 버튼 */}
+            {uniqueReviews.length > 2 && (
+              <button 
+                onClick={() => setShowAll(!showAll)}
+                className='w-full py-5 rounded-4xl border border-white/5 bg-zinc-900/50 text-zinc-400 font-serif text-lg hover:bg-zinc-900 hover:text-primary-400 transition-all cursor-pointer'
+              >
+                {showAll ? '리뷰 접기' : `리뷰 더보기 (${uniqueReviews.length - 2}개 더 있음)`}
+              </button>
+            )}
+
+            {uniqueReviews.length === 0 && (
+              <div className='bg-zinc-900/30 rounded-4xl p-20 text-center border border-white/5 h-full flex items-center justify-center'>
+                <p className='text-zinc-500 text-xl font-serif'>작성된 리뷰가 아직 없습니다.</p>
+              </div>
             )}
           </div>
         </section>
