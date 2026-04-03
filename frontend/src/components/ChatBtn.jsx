@@ -56,10 +56,10 @@ const ChatWindow = ({ isOpen, onClose }) => {
   if (!isOpen) return null
 
   return (
-    <div className='fixed bottom-28 right-8 z-50 flex h-168.75 w-120 flex-col overflow-hidden rounded-3xl border-[1.5px] border-white/10 bg-white/5 shadow-2xl backdrop-blur-2xl'>
+    <div className='fixed bottom-28 right-8 z-50 flex h-168.75 w-120 flex-col overflow-hidden rounded-3xl border-1.5 border-white/10 bg-white/5 shadow-2xl backdrop-blur-2xl'>
       <div className='shrink-0 bg-primary-500 px-6 py-5'>
         <div className='flex items-center justify-between'>
-          <span className='font-serif text-[21px] font-bold leading-7.5 text-neutral-950'>
+          <span className='font-serif text-xl font-bold leading-8 text-neutral-950'>
             VODA AI 어시스턴트
           </span>
           <div className='flex items-center gap-4'>
@@ -77,13 +77,13 @@ const ChatWindow = ({ isOpen, onClose }) => {
         {messages.map((msg) =>
           msg.role === 'ai' ? (
             <div key={msg.id} className='flex justify-start'>
-              <div className='max-w-85.75 rounded-tr-[18px] rounded-br-[18px] rounded-bl-[18px] bg-neutral-900 px-4.5 py-4.5'>
+              <div className='max-w-xs rounded-tr-18 rounded-br-18 rounded-bl-18 bg-neutral-900 px-4.5 py-4.5'>
                 <p className='font-serif text-lg leading-6 text-neutral-50'>{msg.text}</p>
               </div>
             </div>
           ) : (
             <div key={msg.id} className='flex justify-end'>
-              <div className='max-w-85.75 rounded-tl-[18px] rounded-br-[18px] rounded-bl-[18px] border-[1.5px] border-primary-400/20 bg-primary-400/20 px-4.5 py-4.5'>
+              <div className='max-w-xs rounded-tl-18 rounded-br-18 rounded-bl-18 border-1.5 border-primary-400/20 bg-primary-400/20 px-4.5 py-4.5'>
                 <p className='font-serif text-lg leading-6 text-neutral-50'>{msg.text}</p>
               </div>
             </div>
@@ -91,7 +91,7 @@ const ChatWindow = ({ isOpen, onClose }) => {
         )}
         {loading && (
           <div className='flex justify-start'>
-            <div className='rounded-tr-[18px] rounded-br-[18px] rounded-bl-[18px] bg-neutral-900 px-4.5 py-4.5'>
+            <div className='rounded-tr-18 rounded-br-18 rounded-bl-18 bg-neutral-900 px-4.5 py-4.5'>
               <p className='font-serif text-lg leading-6 text-neutral-400'>...</p>
             </div>
           </div>
@@ -99,7 +99,7 @@ const ChatWindow = ({ isOpen, onClose }) => {
         <div ref={bottomRef} />
       </div>
 
-      <div className='shrink-0 border-t-[1.5px] border-white/10 px-6 pb-6 pt-6.5'>
+      <div className='shrink-0 border-t-1.5 border-white/10 px-6 pb-6 pt-6'>
         <div className='flex items-center gap-3'>
           <input
             type='text'
@@ -108,7 +108,7 @@ const ChatWindow = ({ isOpen, onClose }) => {
             onKeyDown={handleKeyDown}
             placeholder='메시지를 입력하세요...'
             disabled={loading}
-            className='flex-1 rounded-xl bg-white/5 px-4.5 py-3.375 font-serif text-lg text-neutral-50 placeholder:text-neutral-400 outline-none disabled:opacity-50'
+            className='flex-1 rounded-xl bg-white/5 px-4.5 py-3 font-serif text-lg text-neutral-50 placeholder:text-neutral-400 outline-none disabled:opacity-50'
           />
           <button
             onClick={handleSend}

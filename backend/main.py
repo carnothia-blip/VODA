@@ -55,8 +55,8 @@ def ask_ai(q: str) -> str:
             {"role": "system", "content": "당신은 VODA 서비스의 친절한 영화 추천 전문가입니다. 한국어로 답변하세요."},
             {"role": "user", "content": q}
         ],
-        "max_tokens": 500,
-        "temperature": 0.7
+        "max_tokens": 300,
+        "temperature": 0.6
     }
     
     print(f"🚀 AI 요청 전송: {q}")
