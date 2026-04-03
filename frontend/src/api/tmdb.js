@@ -3,9 +3,17 @@ import ax from './axios'
 const IMG = 'https://image.tmdb.org/t/p'
 
 export const EP = {
-  // 이미지 URL 헬퍼
-  img: (path, w = 'w500') => path ? `${IMG}/${w}${path}` : null,
-  bg: (path) => path ? `${IMG}/original${path}` : null,
+  // 이미지 URL 헬퍼 (슬래시 중첩 방지)
+  img: (path, w = 'w500') => {
+    if (!path) return null
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path
+    return `${IMG}/${w}/${cleanPath}`
+  },
+  bg: (path) => {
+    if (!path) return null
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path
+    return `${IMG}/original/${cleanPath}`
+  },
 
   // 인기/트렌딩
   popular: (type) => ax.get(`/${type}/popular`),

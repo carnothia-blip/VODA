@@ -5,7 +5,7 @@ import ProfileGrid from '../components/ProfileGrid'
 import ReviewCard from '../components/ReviewCard'
 import SectionTitle from '../components/SectionTitle'
 
-// 내가 작성한 리뷰 예시 데이터
+// 내가 작성한 리뷰 예시 데이터 (TMDB 실제 경로와 매칭)
 const myReviews = [
   {
     id: 1,
@@ -53,8 +53,10 @@ const ProfilePage = () => {
   const [showAllReviews, setShowAllReviews] = useState(false)
   
   useEffect(() => {
+    // TMDB 인기 영화 데이터를 가져와 '시청 중인 콘텐츠' 대용으로 사용
     EP.popular('movie')
       .then((res) => {
+        // Feed 컴포넌트 내부에서 EP.img()를 호출하므로 원본 데이터를 그대로 세팅
         setPopularMovies(res.data.results)
       })
       .catch(err => {
@@ -65,6 +67,7 @@ const ProfilePage = () => {
   return (
     <div className='text-white px-12 py-16 bg-neutral-950 min-h-screen'>
       
+      {/* 시청 중인 콘텐츠 섹션 (Feed) */}
       {popularMovies.length > 0 && (
         <Feed
           type='play' 
@@ -85,7 +88,7 @@ const ProfilePage = () => {
             <ReviewCard 
               key={review.id}
               title={review.title}
-              image={EP.img(review.image, 'w200')}
+              image={EP.img(review.image, 'w200')} // ReviewCard에는 완성된 URL 전달
               date={review.date}
               rating={review.rating}
               content={review.content}
@@ -104,12 +107,14 @@ const ProfilePage = () => {
         </div>
       </section>
 
+      {/* 프로필 설정 섹션 */}
       <section className='my-16'>
         <SectionTitle title='프로필 설정' hideAllBtn={true} />
 
         <div className='mt-4'>
           <ProfileGrid 
             user={mockUser} 
+            movies={popularMovies.slice(0, 4)} // 영화 데이터 전달
             onLogout={() => alert('로그아웃 클릭!')} 
           />
         </div>

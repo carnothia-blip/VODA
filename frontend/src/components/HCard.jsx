@@ -68,7 +68,7 @@ const HCard = ({ id, type, title, poster, genre, runtime, vote_average, showCura
         {/* 썸네일 */}
         <div className='aspect-video overflow-hidden'>
           <img
-            src={EP.img(poster, 'w780')}
+            src={poster}
             alt={title}
             className='size-full object-cover transition-transform duration-500 group-hover:scale-105'
           />
