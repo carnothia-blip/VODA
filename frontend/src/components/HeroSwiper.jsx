@@ -25,7 +25,7 @@ const HeroSwiper = ({ items = [], type = 'movie' }) => {
   const finalItems = [customBanner, ...items]
 
   return (
-    <section className='w-full h-[85vh] relative group'>
+    <section className='w-full h-[92vh] relative group'>
       <Swiper
         modules={[Autoplay, Pagination]} 
         effect='slide' 

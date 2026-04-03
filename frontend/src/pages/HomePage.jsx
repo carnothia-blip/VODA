@@ -38,7 +38,7 @@ const HomePage = () => {
       {/* 히어로 슬라이더 섹션 (자동 재생 및 영상 배경 지원) */}
       <HeroSwiper items={heroItems} type='movie' />
 
-      <div className='px-12 mt-12 flex flex-col gap-16'>
+      <div className='px-12 mt-2 flex flex-col gap-16'>
         
         {/* 1. 이어보기 섹션 */}
         <Feed
