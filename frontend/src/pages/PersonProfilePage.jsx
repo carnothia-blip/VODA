@@ -47,25 +47,102 @@ const PersonProfilePage = () => {
       />
 
       {/* 4. 바이오그래피(Biography) 섹션 */}
-      <section className="px-20 py-16">
-        <h2 className="text-3xl font-bold text-zinc-50 mb-6 font-sans">소개</h2>
-        <div className="max-w-5xl text-lg text-zinc-300 leading-relaxed font-serif whitespace-pre-wrap">
-          {person.biography ||
-            `${person.name}님에 대한 상세 정보가 준비 중입니다.`}
+      <section className="px-12 md:px-24 py-20 font-['Pretendard']">
+        {" "}
+        <div className="flex items-center gap-2 mb-12">
+          <div className="w-3 h-12 bg-primary-400 rounded-full shrink-0" />
+          <h2 className="text-4xl font-bold text-zinc-50 leading-none">소개</h2>
         </div>
+        {/* 요약 정보 그리드: 간격(gap-x-20)과 글씨 크기(text-base/text-lg) 상향 */}
+        {person.known_for_department ||
+        person.birthday ||
+        person.place_of_birth ||
+        person.homepage ? (
+          <div className="flex flex-wrap gap-x-20 gap-y-10 mb-16 pb-12 border-b border-white/10">
+            {person.known_for_department && (
+              <div>
+                <h4 className="text-zinc-500 text-base mb-2 font-medium">
+                  분야
+                </h4>
+                <p className="text-zinc-100 text-xl font-semibold">
+                  {person.known_for_department}
+                </p>
+              </div>
+            )}
+            {person.birthday && (
+              <div>
+                <h4 className="text-zinc-500 text-base mb-2 font-medium">
+                  생년월일
+                </h4>
+                <p className="text-zinc-100 text-xl font-semibold">
+                  {person.birthday}
+                </p>
+              </div>
+            )}
+            {person.place_of_birth && (
+              <div>
+                <h4 className="text-zinc-500 text-base mb-2 font-medium">
+                  출생지
+                </h4>
+                <p className="text-zinc-100 text-xl font-semibold">
+                  {person.place_of_birth}
+                </p>
+              </div>
+            )}
+            {person.popularity && (
+              <div>
+                <h4 className="text-zinc-500 text-base mb-2 font-medium">
+                  인기도
+                </h4>
+                <p className="text-zinc-100 text-xl font-semibold">
+                  {person.popularity.toFixed(1)} P
+                </p>
+              </div>
+            )}
+            {person.homepage && (
+              <div>
+                <h4 className="text-zinc-500 text-base mb-2 font-medium">
+                  공식 홈페이지
+                </h4>
+                <a
+                  href={person.homepage}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary-400 hover:text-primary-300 text-xl font-semibold transition-colors underline underline-offset-4"
+                >
+                  방문하기
+                </a>
+              </div>
+            )}
+          </div>
+        ) : (
+          !person.biography && (
+            <div className="mb-16 py-12 text-zinc-500 text-lg italic border-b border-white/10">
+              {person.name}님에 대한 상세 정보가 준비 중입니다.
+            </div>
+          )
+        )}
+        {/* 상세 바이오그래피: 본문 가독성을 위해 text-xl로 상향 */}
+        {person.biography && (
+          <div className="max-w-6xl text-xl text-zinc-300 leading-relaxed whitespace-pre-wrap">
+            {person.biography}
+          </div>
+        )}
       </section>
 
       {/* 5. 출연작 피드 (Feed type='normal') */}
-      {castCredits.length > 0 && (
-        <Feed
-          type="normal"
-          title="출연작"
-          items={castCredits.map((item) => ({
-            ...item,
-            type: item.media_type, // 영화/TV 구분 데이터 주입
-          }))}
-        />
-      )}
+      <div className="px-24">
+        {castCredits.length > 0 && (
+          <Feed
+            type="normal"
+            title="출연작"
+            items={castCredits.map((item) => ({
+              ...item,
+              type: item.media_type, // 영화/TV 구분 데이터 주입
+            }))}
+          />
+        )}
+      </div>
 
       {/* 6. AI 챗봇 버튼 추가 */}
       <ChatBtn />
