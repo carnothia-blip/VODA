@@ -96,7 +96,7 @@ const AskPage = () => {
               key={`prompt-${idx}`}
               onClick={() => handleSend(prompt)}
               disabled={loading}
-              className="px-3 py-2 rounded-lg border border-white/5 bg-zinc-900/50 text-zinc-400 text-xs hover:border-primary-400/30 hover:text-primary-400 transition-all cursor-pointer text-center flex items-center justify-center min-h-[44px] break-keep disabled:opacity-50"
+              className="px-3 py-2 rounded-lg border border-white/5 bg-zinc-900/50 text-zinc-400 text-xs hover:border-primary-400/30 hover:text-primary-400 transition-all cursor-pointer text-center flex items-center justify-center min-h-11 break-keep disabled:opacity-50"
             >
               {prompt}
             </button>
