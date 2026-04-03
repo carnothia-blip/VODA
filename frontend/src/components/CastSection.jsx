@@ -1,7 +1,10 @@
 import { Link } from 'react-router'
 import { EP } from '../api/tmdb'
+import useDragScroll from '../hooks/useDragScroll'
 
 const CastSection = ({ cast = [] }) => {
+  const drag = useDragScroll()
+
   return (
     <section className='flex flex-col gap-12 w-full'>
       <div className='px-20'>
@@ -11,7 +14,16 @@ const CastSection = ({ cast = [] }) => {
       </div>
 
       {/* 가로 스크롤 출연진 목록 */}
-      <div className='flex gap-16 items-start overflow-x-auto px-20 pb-2 scrollbar-hide'>
+      <div
+        ref={drag.ref}
+        onMouseDown={drag.onMouseDown}
+        onMouseMove={drag.onMouseMove}
+        onMouseUp={drag.onMouseUp}
+        onMouseLeave={drag.onMouseLeave}
+        onDragStart={drag.onDragStart}
+        onClickCapture={drag.onClickCapture}
+        className='flex gap-16 items-start overflow-x-auto px-20 pb-2 scrollbar-hide cursor-grab select-none'
+      >
         {cast.map((actor) => (
           <Link
             key={actor.id}
