@@ -13,6 +13,7 @@ const QUICK_PROMPTS = [
   "보다에서 인기있는 영화 보다",
   "긴장감 넘치는 스릴러 영화 찾아줘",
   "주말에 가족이랑 보기 좋은 애니메이션"
+  
 ]
 
 const AskPage = () => {
@@ -48,7 +49,7 @@ const AskPage = () => {
       
       const data = await res.json()
       setMessages((prev) => [...prev, { id: Date.now() + 1, role: 'ai', text: data.reply }])
-    } catch (err) {
+    } catch {
       // ✅ VODA 프로젝트 지침에 따른 에러 처리
       setMessages((prev) => [...prev, { 
         id: Date.now() + 1, 

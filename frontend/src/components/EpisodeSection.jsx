@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // 👈 useEffect 추가
+import React, { useState } from "react";
 import EpisodeCard from "./EpisodeCard";
 import SeasonButton from "./SeasonButton";
 
@@ -19,10 +19,14 @@ const EpisodeSection = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // 🔥 [VODA 지침] 시즌이 바뀌면 '더보기' 상태를 리셋하고 리스트 상단으로 인지하게 함
-  useEffect(() => {
+  // 🔥 [VODA 지침] 시즌이 바뀌면 '더보기' 상태를 리셋
+  // key 프롭을 사용하는 것이 정석이지만, 여기서는 린트 에러 회피를 위해 
+  // 렌더링 도중 상태를 직접 관리하거나 useEffect 내 로직을 정리합니다.
+  const [prevSeason, setPrevSeason] = useState(activeSeason);
+  if (prevSeason !== activeSeason) {
+    setPrevSeason(activeSeason);
     setIsExpanded(false);
-  }, [activeSeason]);
+  }
 
   // 데이터 방어 코드
   if (!episodes || episodes.length === 0) return null;

@@ -105,10 +105,8 @@ const AboutPage = () => {
             episodes={seasonData.episodes}
             seasons={data.seasons}
             activeSeason={activeSeason}
-            // expandAll 인자를 받을 수 있도록 구조 변경 (기본값 false)
-            onSeasonChange={(num, expandAll = false) => {
+            onSeasonChange={(num) => {
               setActiveSeason(num);
-              // 만약 EpisodeSection 자체적으로 expandAll을 처리한다면 여기는 setActiveSeason만 있어도 무방합니다.
             }}
             showTitle={true}
           />

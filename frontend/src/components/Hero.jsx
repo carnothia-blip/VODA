@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { EP } from '../api/tmdb'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -28,30 +28,40 @@ const Hero = ({
   const navigate = useNavigate()
   const location = useLocation()
   const [isTrailerOpen, setIsTrailerOpen] = useState(false)
-  const [trailerKey, setTrailerKey] = useState(null)
   const [isWishlisted, setIsWishlisted] = useState(false)
 
-  useEffect(() => {
-    const findBestTrailer = (vids) => {
-      if (!vids || vids.length === 0) return null
-      const officialTrailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official)
-      if (officialTrailer) return officialTrailer.key
-      const trailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube')
-      if (trailer) return trailer.key
-      const anyYoutube = vids.find(v => v.site === 'YouTube')
-      return anyYoutube ? anyYoutube.key : null
-    }
+  // 🔥 [VODA 지침] 트레일러 키를 추출하는 헬퍼 함수
+  const findBestTrailer = (vids) => {
+    if (!vids || vids.length === 0) return null
+    const officialTrailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube' && v.official)
+    if (officialTrailer) return officialTrailer.key
+    const trailer = vids.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+    if (trailer) return trailer.key
+    const anyYoutube = vids.find(v => v.site === 'YouTube')
+    return anyYoutube ? anyYoutube.key : null
+  }
 
-    if (videos && videos.length > 0) {
-      setTrailerKey(findBestTrailer(videos))
-    } else if (id && !['person', 'home'].includes(type)) {
+  // props로 넘어온 videos에서 트레일러 추출 (메모이제이션)
+  const derivedTrailerKey = useMemo(() => findBestTrailer(videos), [videos])
+  
+  // API를 통해 별도로 가져온 트레일러 키 상태
+  const [fetchedTrailerKey, setFetchedTrailerKey] = useState(null)
+
+  useEffect(() => {
+    // 이미 props로 트레일러가 있다면 fetch를 건너뜁니다.
+    if (derivedTrailerKey) return;
+
+    if (id && !['person', 'home'].includes(type)) {
       const apiType = type === 'detail' ? location.pathname.split('/')[1] : type
       EP.detail(apiType, id).then(res => {
         const vids = res?.data?.videos?.results
-        setTrailerKey(findBestTrailer(vids))
+        setFetchedTrailerKey(findBestTrailer(vids))
       }).catch(() => null)
     }
-  }, [videos, id, type, location.pathname])
+  }, [derivedTrailerKey, id, type, location.pathname])
+
+  // 최종 트레일러 키 (props 우선, 없으면 fetch된 것 사용)
+  const trailerKey = derivedTrailerKey || fetchedTrailerKey
 
   const handleWatchNow = () => {
     if (trailerKey) setIsTrailerOpen(true)

@@ -53,17 +53,16 @@ const PersonPage = () => {
   const handleSearch = (q) => {
     const query = q?.trim() || ''
     setSearchQuery(query)
-    if (!query) clearSearch()
+    if (!query) {
+      setSearchResults([])
+      setSearchLoading(false)
+    }
   }
 
   // 실시간 검색 디바운스 처리
   useEffect(() => {
     const query = searchQuery?.trim()
-    if (!query) {
-      setSearchResults([])
-      setSearchLoading(false)
-      return
-    }
+    if (!query) return
 
     const timer = setTimeout(() => {
       setSearchLoading(true)
