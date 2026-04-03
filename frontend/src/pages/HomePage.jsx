@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import Hero from '../components/Hero'
+import HeroSwiper from '../components/HeroSwiper'
 import Feed from '../components/Feed' // 통합된 Feed 컴포넌트 임포트
 import { EP } from '../api/tmdb'
 import ChatBtn from '../components/ChatBtn'
 
 const HomePage = () => {
-  const [heroMovie, setHeroMovie] = useState(null)
+  const [heroItems, setHeroItems] = useState([])
   const [popularMovies, setPopularMovies] = useState([])
   const [newMovies, setNewMovies] = useState([])
   const [topRatedMovies, setTopRatedMovies] = useState([])
@@ -19,7 +19,8 @@ const HomePage = () => {
       EP.topRated('movie')
     ]).then(([pop, now, top]) => {
       const popResults = pop.data.results
-      setHeroMovie(popResults[Math.floor(Math.random() * popResults.length)])
+      // 상위 5개를 히어로 스와이퍼 아이템으로 설정
+      setHeroItems(popResults.slice(0, 5))
       setPopularMovies(popResults)
       setNewMovies(now.data.results)
       setTopRatedMovies(top.data.results)
@@ -34,18 +35,8 @@ const HomePage = () => {
 
   return (
     <div className='bg-neutral-950 min-h-screen pb-32'>
-      {/* 히어로 섹션 */}
-      {heroMovie && (
-        <Hero
-          type='movie'
-          id={heroMovie.id}
-          title={heroMovie.title}
-          backdrop={heroMovie.backdrop_path}
-          poster={heroMovie.poster_path}
-          overview={heroMovie.overview}
-          rating={heroMovie.vote_average}
-        />
-      )}
+      {/* 히어로 슬라이더 섹션 (자동 재생 및 영상 배경 지원) */}
+      <HeroSwiper items={heroItems} type='movie' />
 
       <div className='px-12 mt-12 flex flex-col gap-16'>
         

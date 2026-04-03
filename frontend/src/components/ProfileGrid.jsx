@@ -154,8 +154,6 @@ const ProfileGrid = ({ user, onLogout }) => {
           <span>계정 탈퇴하기</span>
         </button>
       </div>
-      
-      
 
     </div>
   )
