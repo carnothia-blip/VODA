@@ -1,14 +1,32 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { EP } from '../api/tmdb'
+import useFetch from '../hooks/useFetch'
 
-const HCard = ({ id, type, title, poster, genre, runtime, vote_average, showCurator = false }) => {
+const HCard = ({
+  id,
+  type,
+  title,
+  poster,
+  genre,
+  runtime,
+  vote_average,
+  showCurator = false,
+}) => {
   const navigate = useNavigate()
   const [hovered, setHovered] = useState(false)
   const [trailerKey, setTrailerKey] = useState(null)
-  const [overview, setOverview] = useState('')
   const timerRef = useRef(null)
   const fetched = useRef(false)
+
+  // 마운트 시 detail 미리 로드 — 장르·상영시간·개요 즉시 표시
+  const { data: detail } = useFetch(() => EP.detail(type, id), [id])
+
+  const genreText   = detail?.genres?.map(g => g.name).join(' · ') || ''
+  const runtimeText = detail?.runtime
+    ? `${detail.runtime}분`
+    : detail?.episode_run_time?.[0] ? `${detail.episode_run_time[0]}분` : ''
+  const overview = detail?.overview || ''
 
   const findTrailer = (vids) => {
     if (!vids || vids.length === 0) return null
@@ -26,28 +44,11 @@ const HCard = ({ id, type, title, poster, genre, runtime, vote_average, showCura
       setHovered(true)
       if (!fetched.current) {
         fetched.current = true
-        ;(async () => {
-          let key = null
-
-          // 1단계: 한국어 예고편
-          const koRes = await EP.videos(type, id, 'ko-KR')
-          key = findTrailer(koRes.data.results)?.key || null
-
-          // 2단계: 영어(글로벌) 예고편
-          if (!key) {
-            const enRes = await EP.videos(type, id, 'en-US')
-            key = findTrailer(enRes.data.results)?.key || null
-          }
-
-          // 3단계: 무차별 탐색 + 개요
-          const detailRes = await EP.detail(type, id)
-          setOverview(detailRes.data.overview || '')
-          if (!key) {
-            key = findTrailer(detailRes.data.videos?.results)?.key || null
-          }
-
-          if (key) setTrailerKey(key)
-        })()
+        // detail은 이미 로드됨 — 예고편 key만 세팅
+        const allVids = detail?.videos?.results || []
+        const koVids  = allVids.filter(v => v.iso_639_1 === 'ko')
+        const key = findTrailer(koVids)?.key || findTrailer(allVids)?.key || null
+        if (key) setTrailerKey(key)
       }
     }, 600)
   }
@@ -62,7 +63,7 @@ const HCard = ({ id, type, title, poster, genre, runtime, vote_average, showCura
       onClick={() => navigate(`/${type}/${id}`)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className='w-110 flex-shrink-0 cursor-pointer'
+      className='w-110 shrink-0 cursor-pointer'
     >
       <div className='relative rounded-2xl overflow-hidden border-2 border-neutral-800 bg-neutral-900/40 backdrop-blur-md flex flex-col'>
         {/* 썸네일 */}
@@ -77,17 +78,22 @@ const HCard = ({ id, type, title, poster, genre, runtime, vote_average, showCura
         {/* 카드 하단 정보 */}
         <div className='p-5 flex flex-col gap-1'>
           <div className='flex items-center justify-between'>
-            {showCurator
-              ? <span className='text-sm font-bold text-secondary-500'>CURATOR'S CHOICE</span>
-              : <span />
-            }
+            {showCurator ? (
+              <span className='text-sm font-bold text-secondary-500'>CURATOR'S CHOICE</span>
+            ) : (
+              <span />
+            )}
             <div className='flex items-center gap-1'>
               <i className='fa-solid fa-star text-primary-400 text-sm' />
-              <span className='text-sm font-bold text-primary-400'>{vote_average?.toFixed(1)}</span>
+              <span className='text-sm font-bold text-primary-400'>
+                {vote_average?.toFixed(1)}
+              </span>
             </div>
           </div>
           <h3 className='text-2xl font-regular text-neutral-50 truncate'>{title}</h3>
-          <p className='text-sm text-neutral-400'>{genre} • {runtime}분</p>
+          <p className='text-sm text-neutral-400'>
+            {[genre || genreText, runtime ? `${runtime}분` : runtimeText].filter(Boolean).join(' • ')}
+          </p>
         </div>
 
         {/* 호버 오버레이 — 카드 전체 덮기 */}
@@ -114,7 +120,7 @@ const HCard = ({ id, type, title, poster, genre, runtime, vote_average, showCura
 
           {/* 개요 */}
           <div className='flex flex-col gap-2 p-4 flex-1 overflow-hidden'>
-            <h3 className='text-white font-bold text-base leading-tight truncate'>{title}</h3>
+            <h3 className='text-white font-bold leading-tight truncate'>{title}</h3>
             {overview ? (
               <p className='text-neutral-400 text-xs leading-relaxed line-clamp-3'>
                 {overview}
