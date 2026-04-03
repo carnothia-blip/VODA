@@ -13,10 +13,15 @@ const AskPage = () => {
   const [messages, setMessages] = useState(INIT_MESSAGES)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const bottomRef = useRef(null)
+  const messagesRef = useRef(null)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // 초기 메시지만 있을 때는 스크롤하지 않음 (페이지 진입 시 상단 유지)
+    if (messages.length <= INIT_MESSAGES.length && !loading) return
+    // window 대신 컨테이너 자체를 스크롤 (페이지 고정)
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+    }
   }, [messages, loading])
 
   const handleSend = async () => {
@@ -56,15 +61,14 @@ const AskPage = () => {
   }
 
   return (
-    <div className='flex flex-col min-h-screen px-12 py-10'>
+    <div className='flex flex-col h-screen px-12 py-10'>
       {/* 메시지 목록 */}
-      <div className='flex-1 max-w-3xl w-full mx-auto flex flex-col gap-4 pb-6'>
+      <div ref={messagesRef} className='flex-1 min-h-0 max-w-3xl w-full mx-auto flex flex-col gap-4 pb-6 overflow-y-auto'>
         {messages.map((msg) => (
           <ChatBubble key={msg.id} msg={msg.text} isAi={msg.role === 'ai'} />
         ))}
         {/* 로딩 인디케이터 */}
         {loading && <ChatBubble msg='...' isAi={true} />}
-        <div ref={bottomRef} />
       </div>
 
       {/* 입력창 */}
