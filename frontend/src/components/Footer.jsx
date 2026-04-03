@@ -1,8 +1,11 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebook, faLinkedinIn, faXTwitter, faInstagram } from '@fortawesome/free-brands-svg-icons'
+
 const SOCIAL = [
-  { label: 'Facebook', text: 'f' },
-  { label: 'Instagram', text: 'in' },
-  { label: 'X', text: 'X' },
-  { label: 'YouTube', text: '▶' },
+  { label: 'Facebook', icon: faFacebook, url: 'https://facebook.com/voda' },
+  { label: 'LinkedIn', icon: faLinkedinIn, url: 'https://linkedin.com/company/voda' },
+  { label: 'X', icon: faXTwitter, url: 'https://x.com/voda' },
+  { label: 'Instagram', icon: faInstagram, url: 'https://instagram.com/voda' },
 ]
 
 const Footer = () => {
@@ -16,10 +19,10 @@ const Footer = () => {
     <footer className='bg-black text-neutral-400 py-16 px-12 border-t border-white/5'>
       <div className='max-w-content mx-auto'>
         {/* 소셜 미디어 아이콘 */}
-        <div className='flex gap-6 mb-10 text-neutral-50 text-2xl'>
-          {SOCIAL.map(({ label, text }) => (
-            <a key={label} href='#' className='hover:text-white transition-colors w-8 h-8 flex items-center justify-center border border-white/20 rounded-full text-sm font-bold' aria-label={label}>
-              {text}
+        <div className='flex gap-6 mb-10 text-neutral-50 text-xl'>
+          {SOCIAL.map(({ label, icon, url }) => (
+            <a key={label} href={url} target='_blank' rel='noopener noreferrer' className='hover:text-primary-400 transition-colors w-8 h-8 flex items-center justify-center border border-white/20 rounded-full hover:border-primary-400' aria-label={label}>
+              <FontAwesomeIcon icon={icon} />
             </a>
           ))}
         </div>
