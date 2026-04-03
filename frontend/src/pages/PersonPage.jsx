@@ -1,35 +1,16 @@
-import { useState, useEffect } from 'react'
-import { EP } from '../api/tmdb'
-import GenreTab from '../components/GenreTab'
-import PersonCard from '../components/PersonCard'
-import SearchBar from '../components/SearchBar'
-import SectionTitle from '../components/SectionTitle'
-import DirectorCard from '../components/DirectorCard'
-import FocusCard from '../components/FocusCard'
-import ChatBtn from '../components/ChatBtn'
-import Feed from '../components/Feed'
+import React, { useState, useEffect } from 'react';
+import { EP } from '../api/tmdb';
+import GenreTab from '../components/GenreTab';
+import PersonCard from '../components/PersonCard';
+import SearchBar from '../components/SearchBar';
+import SectionTitle from '../components/SectionTitle';
+import DirectorCard from '../components/DirectorCard';
+import FocusCard from '../components/FocusCard';
+import ChatBtn from '../components/ChatBtn';
+import Feed from '../components/Feed';
 
-// 1. '인기 감독' -> '인기 크리에이터'로 명칭 변경 및 탭 구성 최적화
+// 탭 구성: '인기 감독' 대신 더 넓은 의미의 '인기 크리에이터' 사용
 const TABS = [
-<<<<<<< HEAD
-  { id: 'trending', name: '오늘의 트렌딩' },
-  { id: 'popular', name: '인기 인물' },
-  { id: 'actor', name: '인기 배우' },
-  { id: 'director', name: '인기 감독' },
-]
-
-const PersonPage = () => {
-  const [trending, setTrending] = useState([])
-  const [popular, setPopular] = useState([])
-  const [activeTab, setActiveTab] = useState('trending')
-  const [loading, setLoading] = useState(true)
-  const [actors, setActors] = useState([])
-  const [directors, setDirectors] = useState([])
-  const [weekTrending, setWeekTrending] = useState([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [searchLoading, setSearchLoading] = useState(false)
-=======
   { id: "popular", name: "인기 인물" },
   { id: "actor", name: "인기 배우" },
   { id: "creator", name: "인기 크리에이터" },
@@ -41,15 +22,13 @@ const PersonPage = () => {
   const [activeTab, setActiveTab] = useState("popular");
   const [loading, setLoading] = useState(true);
   const [actors, setActors] = useState([]);
-  const [directors, setDirectors] = useState([]); // 내부 로직용 데이터 유지
+  const [directors, setDirectors] = useState([]);
   const [weekTrending, setWeekTrending] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
 
   useEffect(() => {
-    // 배우/감독 필터링을 위해 인기 인물 1~2페이지(40명) 동시 fetch
     Promise.all([
       EP.personTrending('day'),
       EP.personPopular(),
@@ -57,120 +36,83 @@ const PersonPage = () => {
       EP.browsePerson('popular', 2),
     ])
       .then(([trendRes, popRes, weekRes, pop2Res]) => {
-<<<<<<< HEAD
-        const pop = popRes.data.results
-        const popAll = [...pop, ...(pop2Res.data.results || [])]
-        setTrending(trendRes.data.results)
-        setPopular(pop)
-        setActors(popAll.filter((p) => p.known_for_department === 'Acting'))
-        setDirectors(popAll.filter((p) => p.known_for_department === 'Directing'))
-        setWeekTrending(weekRes.data.results)
-        setLoading(false)
-=======
         const pop = popRes.data.results;
         const popAll = [...pop, ...(pop2Res.data.results || [])];
+        
         setTrending(trendRes.data.results);
         setPopular(pop);
         setActors(popAll.filter((p) => p.known_for_department === "Acting"));
-        setDirectors(popAll.filter((p) => p.known_for_department !== "Acting")); // 배우 제외 전체
+        // 배우(Acting)를 제외한 나머지를 크리에이터(감독 등)로 분류
+        setDirectors(popAll.filter((p) => p.known_for_department !== "Acting"));
         setWeekTrending(weekRes.data.results);
         setLoading(false);
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
       })
-      .catch(console.error)
-  }, [])
+      .catch(console.error);
+  }, []);
 
-<<<<<<< HEAD
-=======
-  // 2. 필터링 로직 수정: 'creator' 선택 시 배우(Acting)만 제외하고 모두 포함
+  // 필터링 로직: 탭 선택에 따라 데이터를 걸러줌
   const getFilteredItems = (data) => {
-    if (activeTab === 'popular') return data
+    if (activeTab === "popular") return data;
     
     const filtered = data.filter((p) => {
-      if (activeTab === 'actor') return p.known_for_department === 'Acting'
-      if (activeTab === 'creator') {
-        // 배우(Acting) 부서가 아닌 모든 인물을 포함 (감독, 작가, 편집, 제작 등)
-        return p.known_for_department !== 'Acting'
-      }
-      return true
-    })
+      if (activeTab === "actor") return p.known_for_department === "Acting";
+      if (activeTab === "creator") return p.known_for_department !== "Acting";
+      return true;
+    });
 
-    // 데이터가 너무 적을 경우 UI를 위해 원본 노출하는 가이드 유지
-    return filtered.length > 0 ? filtered : data
-  }
+    return filtered.length > 0 ? filtered : data;
+  };
 
   const handleSearch = (q) => {
-    const query = q?.trim() || ''
-    setSearchQuery(query)
-    if (!query) {
-      setSearchResults([])
-      setSearchLoading(false)
-    }
-<<<<<<< HEAD
-  }
+    const query = q?.trim() || '';
+    setSearchQuery(query);
+    if (!query) clearSearch();
+  };
 
-  // 실시간 검색 디바운스 처리
+  // 검색 디바운싱 로직
   useEffect(() => {
-    const query = searchQuery?.trim()
-    if (!query) return
+    const query = searchQuery?.trim();
+    if (!query) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
 
     const timer = setTimeout(() => {
-      setSearchLoading(true)
+      setSearchLoading(true);
       EP.searchPerson(query)
         .then((res) => {
-          setSearchResults(res.data.results || [])
-          setSearchLoading(false)
+          setSearchResults(res.data.results || []);
+          setSearchLoading(false);
         })
         .catch((err) => {
-          console.error('Search Error:', err)
-          setSearchLoading(false)
-        })
-    }, 400)
+          console.error('Search Error:', err);
+          setSearchLoading(false);
+        });
+    }, 400);
 
-    return () => clearTimeout(timer)
-  }, [searchQuery])
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const clearSearch = () => {
-    setSearchQuery('')
-    setSearchResults([])
-    setSearchLoading(false)
-  }
+    setSearchQuery('');
+    setSearchResults([]);
+    setSearchLoading(false);
+  };
 
-<<<<<<< HEAD
-  const persons =
-    activeTab === 'trending'
-      ? trending
-      : activeTab === 'popular'
-        ? popular
-        : activeTab === 'actor'
-          ? actors
-          : directors
-=======
   const persons = getFilteredItems(activeTab === "popular" ? popular : trending);
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
 
-  if (loading)
-    return <div className='p-20 text-center text-zinc-500'>로딩 중...</div>
+  if (loading) return <div className='p-20 text-center text-zinc-500'>로딩 중...</div>;
 
   const avatars = trending.slice(0, 3).map((p) => ({
     id: p.id,
     photo: p.profile_path,
     name: p.name,
-  }))
+  }));
 
   return (
-<<<<<<< HEAD
-    <div className='bg-zinc-950 min-h-screen pb-32'>
-      <section className='relative min-h-125 pt-32 pb-16 overflow-hidden'>
-        <div className='absolute top-0 right-0 w-2/5 h-full pointer-events-none'>
-          <div className='absolute top-1/4 right-0 w-96 h-96 bg-primary-600 opacity-20 rounded-full blur-3xl' />
-          <div className='absolute top-1/3 right-24 w-64 h-64 bg-blue-600 opacity-15 rounded-full blur-3xl' />
-        </div>
-
-        <div className='relative z-10 max-w-screen-2xl mx-auto px-20 flex flex-col items-center text-center'>
-          <p className='text-xs font-semibold tracking-widest text-primary-400 uppercase mb-4'>
-=======
     <div className="bg-zinc-950 min-h-screen pb-32">
+      {/* 히어로 섹션 */}
       <section className="relative min-h-125 pt-32 pb-16 overflow-hidden">
         <div className="absolute top-0 right-0 w-2/5 h-full pointer-events-none">
           <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary-600 opacity-20 rounded-full blur-3xl" />
@@ -179,37 +121,22 @@ const PersonPage = () => {
 
         <div className="relative z-10 max-w-screen-2xl mx-auto px-20 flex flex-col items-center text-center">
           <p className="text-xs font-semibold tracking-widest text-primary-400 uppercase mb-4">
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
             ETHEREAL PROFILES
           </p>
           <h1 className='text-8xl font-bold text-zinc-50 font-serif leading-tight mb-6'>
             사람을 보다
           </h1>
-<<<<<<< HEAD
-          <p className='text-base text-zinc-400 leading-relaxed mb-10 max-w-4xl mx-auto w-full'>
-=======
-          <p className=" text-zinc-400 leading-relaxed mb-10 max-w-4xl mx-auto w-full">
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
+          <p className="text-zinc-400 leading-relaxed mb-10 max-w-4xl mx-auto w-full">
             VODA가 주목하는 스크린 뒤의 빛나는 주역들. 시대를 대표하는 배우와
             감독들을 만나보세요.
           </p>
 
-<<<<<<< HEAD
-          <div className='w-full max-w-4xl'>
-=======
           <div className="w-full max-w-4xl">
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
             <SearchBar
               variant='normal'
               placeholder='배우, 감독 이름을 검색해보세요.'
               value={searchQuery}
-              onChange={(e) => {
-                const q = e.target.value
-                setSearchQuery(q)
-                if (!q) {
-                  setSearchResults([])
-                }
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
               onSubmit={handleSearch}
             />
           </div>
@@ -218,29 +145,17 @@ const PersonPage = () => {
 
       {/* 검색 결과 섹션 */}
       {searchQuery && (
-<<<<<<< HEAD
-        <div className='px-12 mt-8'>
-          <div className='flex items-center justify-between mb-8'>
-            <div className='flex items-center gap-2.5'>
-              <div className='w-3 h-12 bg-primary-400 rounded-full shrink-0' />
-              <h2 className='font-serif font-bold text-3xl text-neutral-50'>
-=======
         <div className="px-12 mt-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2.5">
               <div className="w-3 h-12 bg-primary-400 rounded-full shrink-0" />
               <h2 className="font-serif font-bold text-3xl text-neutral-50">
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
                 '{searchQuery}' 검색 결과
               </h2>
             </div>
             <button
               onClick={clearSearch}
-<<<<<<< HEAD
-              className='flex items-center gap-2 text-neutral-400 hover:text-primary-400 transition-colors font-serif text-base'
-=======
-              className="flex items-center gap-2 text-neutral-400 hover:text-primary-400 transition-colors font-serif "
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
+              className="flex items-center gap-2 text-neutral-400 hover:text-primary-400 transition-colors font-serif"
             >
               <i className='fa-solid fa-xmark' />
               검색 초기화
@@ -270,84 +185,63 @@ const PersonPage = () => {
         </div>
       )}
 
-      {/* 인물 탭 */}
+      {/* 메인 피드 섹션 */}
       {!searchQuery && (
-      <div className='mt-8'>
-        <GenreTab tabs={TABS} active={activeTab} onChange={setActiveTab} />
-      </div>
-      )}
-
-      {/* 인물 그리드 섹션 */}
-      {!searchQuery && (
-      <div className='px-12'>
-        <Feed
-          type='person'
-          title='오늘의 트렌딩 인물'
-          items={persons}
-<<<<<<< HEAD
-          mediaType='person'
-          link='/person/category?title=오늘의+트렌딩+인물&category=trending_day'
-        />
-        <Feed
-          type='person'
-          title='이번 주 트렌딩 인물'
-          items={weekTrending}
-          mediaType='person'
-          link='/person/category?title=이번+주+트렌딩+인물&category=trending_week'
-=======
-          mediaType="person"
-          link={`/person/category?title=오늘의+트렌딩+인물&category=${activeTab}`}
-        />
-        <Feed
-          type="person"
-          title="이번 주 트렌딩 인물"
-          items={getFilteredItems(weekTrending)}
-          mediaType='person'
-          link={`/person/category?title=이번+주+트렌딩+인물&category=${activeTab}_week`}
-        />
-      </div>
-      )}
-
-      {/* Focus 섹션 */}
-      {!searchQuery && (
-      <div className='px-12 mt-20'>
-        <SectionTitle
-          title='포커스 인물'
-          subtitle='VODA가 주목하는 이번 주 인물 기획전'
-          link='/person/category?title=포커스+인물&category=popular'
-        />
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-          <div className='lg:col-span-2'>
-            <DirectorCard
-              label='Director Insight'
-              title='박찬욱의 미장센'
-              desc={
-                '대칭의 미학, 폭력의 시적 표현.\n한국 영화를 세계로 알린 거장의 발자취를 따라가 봅니다.'
-              }
-              btnText='기획전 보기'
-              to='/find?curator=parkwook'
+        <>
+          <div className='mt-8'>
+            <GenreTab tabs={TABS} active={activeTab} onChange={setActiveTab} />
+          </div>
+          <div className='px-12'>
+            <Feed
+              type='person'
+              title='오늘의 트렌딩 인물'
+              items={persons}
+              mediaType="person"
+              link={`/person/category?title=오늘의+트렌딩+인물&category=${activeTab}`}
+            />
+            <Feed
+              type="person"
+              title="이번 주 트렌딩 인물"
+              items={getFilteredItems(weekTrending)}
+              mediaType="person"
+              link={`/person/category?title=이번+주+트렌딩+인물&category=${activeTab}_week`}
             />
           </div>
-          <div className='lg:col-span-1'>
-            <FocusCard
-              title='신인 발굴'
-              desc='VODA가 예측하는 2026년 최고의 루키들을 소개합니다.'
-              avatars={avatars}
-              totalCount={24}
-              to='/person/category'
+
+          {/* 기획전 섹션 */}
+          <div className='px-12 mt-20'>
+            <SectionTitle
+              title='포커스 인물'
+              subtitle='VODA가 주목하는 이번 주 인물 기획전'
+              link='/person/category?title=포커스+인물&category=popular'
             />
+            <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+              <div className='lg:col-span-2'>
+                <DirectorCard
+                  label='Director Insight'
+                  title='박찬욱의 미장센'
+                  desc={'대칭의 미학, 폭력의 시적 표현.\n한국 영화를 세계로 알린 거장의 발자취를 따라가 봅니다.'}
+                  btnText='기획전 보기'
+                  to='/find?curator=parkwook'
+                />
+              </div>
+              <div className='lg:col-span-1'>
+                <FocusCard
+                  title='신인 발굴'
+                  desc='VODA가 예측하는 2026년 최고의 루키들을 소개합니다.'
+                  avatars={avatars}
+                  totalCount={24}
+                  to='/person/category'
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
       )}
 
       <ChatBtn />
     </div>
-  )
-}
+  );
+};
 
-<<<<<<< HEAD
-export default PersonPage
-=======
 export default PersonPage;
->>>>>>> c8092309928a334ae501d21a7a6e8b1133eed438
